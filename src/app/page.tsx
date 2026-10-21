@@ -1,69 +1,78 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
+import React, { useState } from "react";
+import { Header } from "@/components/Header/Header";
+import { GameBoard } from "@/components/Board/GameBoard";
+import { VictoryModal } from "@/components/Board/VictoryModal";
+import { GameOverModal } from "@/components/Board/GameOverModal";
+import { useGame } from "@/hooks/useGame";
+import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
+
+/**
+ * @description Página principal da aplicação Footle.
+ * Orquestra o ciclo de vida do jogo, vinculando o Header de busca,
+ * o GameBoard em tela cheia (100% da viewport) e os modais de encerramento (vitória e derrota).
+ */
 export default function Home() {
+  const {
+    guesses,
+    isWon,
+    isGameOver,
+    secretPlayer,
+    submitGuess,
+    resetGame,
+    guessedPlayerIds,
+    maxAttempts
+  } = useGame();
+
+  const [dismissedVictory, setDismissedVictory] = useState(false);
+  const [dismissedGameOver, setDismissedGameOver] = useState(false);
+
+  const isVictoryModalOpen = isWon && !dismissedVictory;
+  const isGameOverModalOpen = isGameOver && !dismissedGameOver;
+
+  const handleSelectPlayer = (player: SearchPlayerItem) => {
+    submitGuess(player.id);
+  };
+
+  const handleReset = () => {
+    setDismissedVictory(false);
+    setDismissedGameOver(false);
+    resetGame();
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="h-screen max-h-screen overflow-hidden flex flex-col">
+      {/* Header com Busca (desabilitada se venceu ou atingiu 10 palpites) */}
+      <Header
+        onSelectPlayer={handleSelectPlayer}
+        disabled={isWon || isGameOver}
+        excludePlayerIds={guessedPlayerIds}
+        onReset={handleReset}
+      />
+
+      {/* Conteúdo Principal do Jogo (100% da tela abaixo da Navbar) */}
+      <main className="flex-1 w-full h-[calc(100vh-var(--header-height))] overflow-hidden flex flex-col relative">
+        <GameBoard guesses={guesses} maxAttempts={maxAttempts} />
       </main>
+
+      {/* Modal de Vitória com Parabéns e Estatísticas */}
+      <VictoryModal
+        isOpen={isVictoryModalOpen}
+        onClose={() => setDismissedVictory(true)}
+        player={secretPlayer}
+        attempts={guesses.length}
+        maxAttempts={maxAttempts}
+      />
+
+      {/* Modal de Fim de Jogo (10 tentativas esgotadas) */}
+      <GameOverModal
+        isOpen={isGameOverModalOpen}
+        onClose={() => setDismissedGameOver(true)}
+        player={secretPlayer}
+        maxAttempts={maxAttempts}
+        onReset={handleReset}
+      />
     </div>
   );
 }

@@ -1,0 +1,660 @@
+[
+  {
+    "id": 1,
+    "name": "Vinícius José Paixão de Oliveira Júnior",
+    "knownName": "Vini Jr",
+    "nationality": "Brasil",
+    "continent": "América do Sul",
+    "currentClub": "Real Madrid",
+    "league": "La Liga",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-esquerda",
+      "Segundo Atacante"
+    ],
+    "age": 26,
+    "careerGoals": 140,
+    "pastClubs": [
+      "Flamengo",
+      "Real Madrid"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/z5o9zt1788114155.png"
+  },
+  {
+    "id": 2,
+    "name": "Erling Braut Haaland",
+    "knownName": "Erling Haaland",
+    "nationality": "Noruega",
+    "continent": "Europa",
+    "currentClub": "Manchester City",
+    "league": "Premier League",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Centroavante"
+    ],
+    "age": 26,
+    "careerGoals": 320,
+    "pastClubs": [
+      "Bryne",
+      "Molde",
+      "Red Bull Salzburg",
+      "Borussia Dortmund",
+      "Manchester City"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/e8cart1789115621.png"
+  },
+  {
+    "id": 3,
+    "name": "Kylian Mbappé Lottin",
+    "knownName": "Kylian Mbappé",
+    "nationality": "França",
+    "continent": "Europa",
+    "currentClub": "Real Madrid",
+    "league": "La Liga",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-esquerda",
+      "Centroavante"
+    ],
+    "age": 27,
+    "careerGoals": 370,
+    "pastClubs": [
+      "Monaco",
+      "Paris Saint-Germain",
+      "Real Madrid"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/cxrmkm1788114306.png"
+  },
+  {
+    "id": 4,
+    "name": "Harry Edward Kane",
+    "knownName": "Harry Kane",
+    "nationality": "Inglaterra",
+    "continent": "Europa",
+    "currentClub": "Bayern de Munique",
+    "league": "Bundesliga",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Centroavante"
+    ],
+    "age": 33,
+    "careerGoals": 440,
+    "pastClubs": [
+      "Tottenham Hotspur",
+      "Leyton Orient",
+      "Millwall",
+      "Norwich City",
+      "Leicester City",
+      "Bayern de Munique"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/j4ouvd1756408895.png"
+  },
+  {
+    "id": 5,
+    "name": "Jude Victor William Bellingham",
+    "knownName": "Jude Bellingham",
+    "nationality": "Inglaterra",
+    "continent": "Europa",
+    "currentClub": "Real Madrid",
+    "league": "La Liga",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Meia Central"
+    ],
+    "age": 23,
+    "careerGoals": 80,
+    "pastClubs": [
+      "Birmingham City",
+      "Borussia Dortmund",
+      "Real Madrid"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/7idg7x1788113677.png"
+  },
+  {
+    "id": 6,
+    "name": "Kevin De Bruyne",
+    "knownName": "Kevin De Bruyne",
+    "nationality": "Bélgica",
+    "continent": "Europa",
+    "currentClub": "Manchester City",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Meia Central"
+    ],
+    "age": 35,
+    "careerGoals": 185,
+    "pastClubs": [
+      "Genk",
+      "Chelsea",
+      "Werder Bremen",
+      "Wolfsburg",
+      "Manchester City"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/o4flia1764089447.png"
+  },
+  {
+    "id": 7,
+    "name": "Mohamed Salah Hamed Mahrous Ghaly",
+    "knownName": "Mohamed Salah",
+    "nationality": "Egito",
+    "continent": "África",
+    "currentClub": "Liverpool",
+    "league": "Premier League",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-direita"
+    ],
+    "age": 34,
+    "careerGoals": 355,
+    "pastClubs": [
+      "Al Mokawloon",
+      "Basel",
+      "Chelsea",
+      "Fiorentina",
+      "Roma",
+      "Liverpool"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/3blc581757088735.png"
+  },
+  {
+    "id": 8,
+    "name": "Rodrigo Hernández Cascante",
+    "knownName": "Rodri",
+    "nationality": "Espanha",
+    "continent": "Europa",
+    "currentClub": "Manchester City",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Volante",
+      "Meia Central"
+    ],
+    "age": 30,
+    "careerGoals": 42,
+    "pastClubs": [
+      "Villarreal",
+      "Atlético de Madrid",
+      "Manchester City"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/0ml2zi1761148957.png"
+  },
+  {
+    "id": 9,
+    "name": "Robert Lewandowski",
+    "knownName": "Robert Lewandowski",
+    "nationality": "Polônia",
+    "continent": "Europa",
+    "currentClub": "Barcelona",
+    "league": "La Liga",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Centroavante"
+    ],
+    "age": 38,
+    "careerGoals": 690,
+    "pastClubs": [
+      "Znicz Pruszków",
+      "Lech Poznań",
+      "Borussia Dortmund",
+      "Bayern de Munique",
+      "Barcelona"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/vtrddu1785612817.png"
+  },
+  {
+    "id": 10,
+    "name": "Bukayo Ayoyinka T. M. Saka",
+    "knownName": "Bukayo Saka",
+    "nationality": "Inglaterra",
+    "continent": "Europa",
+    "currentClub": "Arsenal",
+    "league": "Premier League",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-direita"
+    ],
+    "age": 25,
+    "careerGoals": 82,
+    "pastClubs": [
+      "Arsenal"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/7np7651788606735.png"
+  },
+  {
+    "id": 11,
+    "name": "Jamal Musiala",
+    "knownName": "Jamal Musiala",
+    "nationality": "Alemanha",
+    "continent": "Europa",
+    "currentClub": "Bayern de Munique",
+    "league": "Bundesliga",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Ponta-esquerda"
+    ],
+    "age": 23,
+    "careerGoals": 65,
+    "pastClubs": [
+      "Southampton",
+      "Chelsea",
+      "Bayern de Munique"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/vbkv611756416067.png"
+  },
+  {
+    "id": 12,
+    "name": "Lautaro Javier Martínez",
+    "knownName": "Lautaro Martínez",
+    "nationality": "Argentina",
+    "continent": "América do Sul",
+    "currentClub": "Inter de Milão",
+    "league": "Serie A",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Centroavante",
+      "Segundo Atacante"
+    ],
+    "age": 29,
+    "careerGoals": 185,
+    "pastClubs": [
+      "Racing Club",
+      "Inter de Milão"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/vwxq811759408924.png"
+  },
+  {
+    "id": 13,
+    "name": "Virgil van Dijk",
+    "knownName": "Virgil van Dijk",
+    "nationality": "Holanda",
+    "continent": "Europa",
+    "currentClub": "Liverpool",
+    "league": "Premier League",
+    "primaryPosition": "Defensor",
+    "positions": [
+      "Zagueiro"
+    ],
+    "age": 35,
+    "careerGoals": 58,
+    "pastClubs": [
+      "Groningen",
+      "Celtic",
+      "Southampton",
+      "Liverpool"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/0yunf31788550981.png"
+  },
+  {
+    "id": 14,
+    "name": "Rúben dos Santos Gato Alves Dias",
+    "knownName": "Rúben Dias",
+    "nationality": "Portugal",
+    "continent": "Europa",
+    "currentClub": "Manchester City",
+    "league": "Premier League",
+    "primaryPosition": "Defensor",
+    "positions": [
+      "Zagueiro"
+    ],
+    "age": 29,
+    "careerGoals": 22,
+    "pastClubs": [
+      "Benfica",
+      "Manchester City"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/tmtas31789117560.png"
+  },
+  {
+    "id": 15,
+    "name": "Alisson Ramsés Becker",
+    "knownName": "Alisson Becker",
+    "nationality": "Brasil",
+    "continent": "América do Sul",
+    "currentClub": "Liverpool",
+    "league": "Premier League",
+    "primaryPosition": "Goleiro",
+    "positions": [
+      "Goleiro"
+    ],
+    "age": 34,
+    "careerGoals": 1,
+    "pastClubs": [
+      "Internacional",
+      "Roma",
+      "Liverpool"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/xj6j4o1788592263.png"
+  },
+  {
+    "id": 16,
+    "name": "Antoine Griezmann",
+    "knownName": "Antoine Griezmann",
+    "nationality": "França",
+    "continent": "Europa",
+    "currentClub": "Atlético de Madrid",
+    "league": "La Liga",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Segundo Atacante",
+      "Meia Ofensivo"
+    ],
+    "age": 35,
+    "careerGoals": 290,
+    "pastClubs": [
+      "Real Sociedad",
+      "Atlético de Madrid",
+      "Barcelona",
+      "Atlético de Madrid"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/tiqhh41762288400.png"
+  },
+  {
+    "id": 17,
+    "name": "Bruno Miguel Borges Fernandes",
+    "knownName": "Bruno Fernandes",
+    "nationality": "Portugal",
+    "continent": "Europa",
+    "currentClub": "Manchester United",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Meia Central"
+    ],
+    "age": 32,
+    "careerGoals": 195,
+    "pastClubs": [
+      "Novara",
+      "Udinese",
+      "Sampdoria",
+      "Sporting CP",
+      "Manchester United"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/utrk0y1789119923.png"
+  },
+  {
+    "id": 18,
+    "name": "Son Heung-min",
+    "knownName": "Son Heung-min",
+    "nationality": "Coreia do Sul",
+    "continent": "Ásia",
+    "currentClub": "Tottenham Hotspur",
+    "league": "Premier League",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-esquerda",
+      "Centroavante"
+    ],
+    "age": 34,
+    "careerGoals": 260,
+    "pastClubs": [
+      "Hamburgo",
+      "Bayer Leverkusen",
+      "Tottenham Hotspur"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/a5cqf81766425262.png"
+  },
+  {
+    "id": 19,
+    "name": "Federico Santiago Valverde Dipetta",
+    "knownName": "Federico Valverde",
+    "nationality": "Uruguai",
+    "continent": "América do Sul",
+    "currentClub": "Real Madrid",
+    "league": "La Liga",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Central",
+      "Ponta-direita"
+    ],
+    "age": 28,
+    "careerGoals": 38,
+    "pastClubs": [
+      "Peñarol",
+      "Deportivo La Coruña",
+      "Real Madrid"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/6rcajb1788113814.png"
+  },
+  {
+    "id": 20,
+    "name": "Florian Richard Wirtz",
+    "knownName": "Florian Wirtz",
+    "nationality": "Alemanha",
+    "continent": "Europa",
+    "currentClub": "Bayer Leverkusen",
+    "league": "Bundesliga",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Ponta-esquerda"
+    ],
+    "age": 23,
+    "careerGoals": 60,
+    "pastClubs": [
+      "Colônia",
+      "Bayer Leverkusen"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/njg95e1788551216.png"
+  },
+  {
+    "id": 21,
+    "name": "Cole Jermaine Palmer",
+    "knownName": "Cole Palmer",
+    "nationality": "Inglaterra",
+    "continent": "Europa",
+    "currentClub": "Chelsea",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Ponta-direita"
+    ],
+    "age": 24,
+    "careerGoals": 48,
+    "pastClubs": [
+      "Manchester City",
+      "Chelsea"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/q6nnho1787689956.png"
+  },
+  {
+    "id": 22,
+    "name": "Lamine Yamal Nasraoui Ebana",
+    "knownName": "Lamine Yamal",
+    "nationality": "Espanha",
+    "continent": "Europa",
+    "currentClub": "Barcelona",
+    "league": "La Liga",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-direita"
+    ],
+    "age": 19,
+    "careerGoals": 28,
+    "pastClubs": [
+      "Barcelona"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/m9n4ja1761512633.png"
+  },
+  {
+    "id": 23,
+    "name": "Thibaut Nicolas Marc Courtois",
+    "knownName": "Thibaut Courtois",
+    "nationality": "Bélgica",
+    "continent": "Europa",
+    "currentClub": "Real Madrid",
+    "league": "La Liga",
+    "primaryPosition": "Goleiro",
+    "positions": [
+      "Goleiro"
+    ],
+    "age": 34,
+    "careerGoals": 0,
+    "pastClubs": [
+      "Genk",
+      "Atlético de Madrid",
+      "Chelsea",
+      "Real Madrid"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/w5p8eo1788111831.png"
+  },
+  {
+    "id": 24,
+    "name": "Bernardo Mota Veiga de Carvalho e Silva",
+    "knownName": "Bernardo Silva",
+    "nationality": "Portugal",
+    "continent": "Europa",
+    "currentClub": "Manchester City",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Ponta-direita"
+    ],
+    "age": 32,
+    "careerGoals": 115,
+    "pastClubs": [
+      "Benfica",
+      "Monaco",
+      "Manchester City"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/zfv07e1788114024.png"
+  },
+  {
+    "id": 25,
+    "name": "William Alain André Gabriel Saliba",
+    "knownName": "William Saliba",
+    "nationality": "França",
+    "continent": "Europa",
+    "currentClub": "Arsenal",
+    "league": "Premier League",
+    "primaryPosition": "Defensor",
+    "positions": [
+      "Zagueiro"
+    ],
+    "age": 25,
+    "careerGoals": 12,
+    "pastClubs": [
+      "Saint-Étienne",
+      "Arsenal",
+      "Nice",
+      "Marseille"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/pnctap1788606629.png"
+  },
+  {
+    "id": 26,
+    "name": "Declan Rice",
+    "knownName": "Declan Rice",
+    "nationality": "Inglaterra",
+    "continent": "Europa",
+    "currentClub": "Arsenal",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Volante",
+      "Meia Central"
+    ],
+    "age": 27,
+    "careerGoals": 28,
+    "pastClubs": [
+      "West Ham United",
+      "Arsenal"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/v1ijg61788607059.png"
+  },
+  {
+    "id": 27,
+    "name": "Rafael Alexandre da Conceição Leão",
+    "knownName": "Rafael Leão",
+    "nationality": "Portugal",
+    "continent": "Europa",
+    "currentClub": "Milan",
+    "league": "Serie A",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-esquerda",
+      "Centroavante"
+    ],
+    "age": 27,
+    "careerGoals": 82,
+    "pastClubs": [
+      "Sporting CP",
+      "Lille",
+      "Milan"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/tlgrvf1758892567.png"
+  },
+  {
+    "id": 28,
+    "name": "Philip Walter Foden",
+    "knownName": "Phil Foden",
+    "nationality": "Inglaterra",
+    "continent": "Europa",
+    "currentClub": "Manchester City",
+    "league": "Premier League",
+    "primaryPosition": "Meio-campista",
+    "positions": [
+      "Meia Ofensivo",
+      "Ponta-direita"
+    ],
+    "age": 26,
+    "careerGoals": 105,
+    "pastClubs": [
+      "Manchester City"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/acp1s31789117935.png"
+  },
+  {
+    "id": 29,
+    "name": "Ousmane Dembélé",
+    "knownName": "Ousmane Dembélé",
+    "nationality": "França",
+    "continent": "Europa",
+    "currentClub": "Paris Saint-Germain",
+    "league": "Ligue 1",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-direita",
+      "Ponta-esquerda"
+    ],
+    "age": 29,
+    "careerGoals": 85,
+    "pastClubs": [
+      "Rennes",
+      "Borussia Dortmund",
+      "Barcelona",
+      "Paris Saint-Germain"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/pstgy21766335175.png"
+  },
+  {
+    "id": 30,
+    "name": "Khvicha Kvaratskhelia",
+    "knownName": "Khvicha Kvaratskhelia",
+    "nationality": "Geórgia",
+    "continent": "Europa",
+    "currentClub": "Napoli",
+    "league": "Serie A",
+    "primaryPosition": "Atacante",
+    "positions": [
+      "Ponta-esquerda"
+    ],
+    "age": 25,
+    "careerGoals": 70,
+    "pastClubs": [
+      "Dinamo Tbilisi",
+      "Rustavi",
+      "Lokomotiv Moscou",
+      "Rubin Kazan",
+      "Dinamo Batumi",
+      "Napoli"
+    ],
+    "photoUrl": "https://r2.thesportsdb.com/images/media/player/cutout/n4iv5t1766335312.png"
+  }
+]
