@@ -1,0 +1,42 @@
+name: Sync Players Database
+
+on:
+  schedule:
+    # Executa toda segunda-feira às 06:00 UTC (03:00 BRT)
+    - cron: "0 6 * * 1"
+  workflow_dispatch: # Permite rodar manualmente na aba Actions do GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  sync-players:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Wikidata bulk sync
+        run: npm run db:sync
+
+      - name: Commit and push updated players.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/players.json
+          if git diff --staged --quiet; then
+            echo "Nenhuma alteracao no banco de jogadores."
+          else
+            git commit -m "chore(data): atualiza banco de jogadores semanalmente [skip ci]"
+            git push
+          fi
