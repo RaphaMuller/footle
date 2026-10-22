@@ -8,7 +8,7 @@ export const MAX_ATTEMPTS = 10;
 function getStorageKey(): string {
   if (typeof window === "undefined") return "";
   const today = new Date().toISOString().split("T")[0];
-  return `footle_game_v2_${today}`;
+  return `footle_game_v3_${today}`;
 }
 
 export function useGame() {
@@ -20,8 +20,9 @@ export function useGame() {
   useEffect(() => {
     try {
       const today = new Date().toISOString().split("T")[0];
-      // Invalida cache legado com vitoria travada
+      // Invalida caches legados (v1 e v2) com contrato antigo de categorias
       localStorage.removeItem(`footle_game_${today}`);
+      localStorage.removeItem(`footle_game_v2_${today}`);
 
       const key = getStorageKey();
       if (!key) return;
@@ -105,6 +106,7 @@ export function useGame() {
       const today = new Date().toISOString().split("T")[0];
       localStorage.removeItem(`footle_game_${today}`);
       localStorage.removeItem(`footle_game_v2_${today}`);
+      localStorage.removeItem(`footle_game_v3_${today}`);
     } catch (e) {
       console.warn("Erro ao limpar localStorage:", e);
     }

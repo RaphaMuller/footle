@@ -82,21 +82,33 @@ export function evaluateGuess(
     nationalityFeedback = { value: guessed.nationality, status: "INCORRECT" };
   }
 
-  // 2. Clube Atual
+  // 2. Clube Atual (com dica parcial para histórico de clubes em comum)
+  const commonClubs = guessed.pastClubs.filter((club) =>
+    target.pastClubs.some((targetClub) => targetClub.toLowerCase() === club.toLowerCase())
+  );
+
   let currentClubFeedback: CategoryFeedback;
   if (guessed.currentClub.toLowerCase() === target.currentClub.toLowerCase()) {
     currentClubFeedback = { value: guessed.currentClub, status: "CORRECT" };
-  } else if (guessed.league === target.league) {
+  } else if (commonClubs.length > 0) {
     currentClubFeedback = {
       value: guessed.currentClub,
       status: "PARTIAL",
-      hint: `Mesma liga (${guessed.league})`
+      hint: `Ex-clube em comum: ${commonClubs.join(", ")}`
     };
   } else {
     currentClubFeedback = { value: guessed.currentClub, status: "INCORRECT" };
   }
 
-  // 3. Posição
+  // 3. Liga
+  let leagueFeedback: CategoryFeedback;
+  if (guessed.league.toLowerCase() === target.league.toLowerCase()) {
+    leagueFeedback = { value: guessed.league, status: "CORRECT" };
+  } else {
+    leagueFeedback = { value: guessed.league, status: "INCORRECT" };
+  }
+
+  // 4. Posição
   let positionFeedback: CategoryFeedback;
   const commonSpecificPositions = guessed.positions.filter((pos) =>
     target.positions.includes(pos)
@@ -122,7 +134,7 @@ export function evaluateGuess(
     positionFeedback = { value: guessed.primaryPosition, status: "INCORRECT" };
   }
 
-  // 4. Idade (Higher / Lower / Exact)
+  // 5. Idade (Higher / Lower / Exact)
   let ageFeedback: CategoryFeedback;
   if (guessed.age === target.age) {
     ageFeedback = { value: guessed.age, status: "CORRECT" };
@@ -140,7 +152,7 @@ export function evaluateGuess(
     };
   }
 
-  // 5. Gols na Carreira (Higher / Lower / Exact com margem)
+  // 6. Gols na Carreira (Higher / Lower / Exact com margem)
   let careerGoalsFeedback: CategoryFeedback;
   const diffGoals = Math.abs(guessed.careerGoals - target.careerGoals);
 
@@ -166,26 +178,6 @@ export function evaluateGuess(
     };
   }
 
-  // 6. Clubes Passados (Interseção)
-  let pastClubsFeedback: CategoryFeedback;
-  const commonClubs = guessed.pastClubs.filter((club) =>
-    target.pastClubs.some((targetClub) => targetClub.toLowerCase() === club.toLowerCase())
-  );
-
-  if (commonClubs.length > 0) {
-    pastClubsFeedback = {
-      value: guessed.pastClubs,
-      status: "CORRECT",
-      hint: `Jogou no mesmo time: ${commonClubs.join(", ")}`
-    };
-  } else {
-    pastClubsFeedback = {
-      value: guessed.pastClubs,
-      status: "INCORRECT",
-      hint: "Nenhum clube em comum no histórico"
-    };
-  }
-
   return {
     id: `${guessed.id}-${guessNumber}-${Date.now()}`,
     guessNumber,
@@ -199,10 +191,10 @@ export function evaluateGuess(
     categories: {
       nationality: nationalityFeedback,
       currentClub: currentClubFeedback,
+      league: leagueFeedback,
       position: positionFeedback,
       age: ageFeedback,
-      careerGoals: careerGoalsFeedback,
-      pastClubs: pastClubsFeedback
+      careerGoals: careerGoalsFeedback
     }
   };
 }

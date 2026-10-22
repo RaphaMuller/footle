@@ -9,47 +9,29 @@ import { Player } from "@/lib/schemas";
 export interface PlayerAttemptCardProps {
   /** Dados do atleta palpitado nesta tentativa */
   player: Player;
-  /** Número sequencial da tentativa (1 a 10) */
-  guessNumber: number;
-  /** Limite máximo de palpites da partida (padrão: 10) */
-  maxAttempts?: number;
 }
 
 /**
  * @description Exibe o card isolado com os dados do jogador palpitado na tentativa:
- * badge sequencial, foto oficial com aro metálico, nome conhecido e nome completo.
+ * foto oficial ampliada com aro metálico e nome conhecido em destaque.
  * 
  * @param {PlayerAttemptCardProps} props - Propriedades do card do atleta.
  */
-export function PlayerAttemptCard({
-  player,
-  guessNumber,
-  maxAttempts = 10
-}: PlayerAttemptCardProps) {
+export function PlayerAttemptCard({ player }: PlayerAttemptCardProps) {
   return (
-    <div className="w-full max-w-[270px] sm:max-w-[300px] flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-3xl card-silver-glass gap-2.5 sm:gap-3 transition-all">
-      {/* Badge da Tentativa Prateado */}
-      <span className="text-[11px] font-bold tracking-wider uppercase px-3.5 py-0.5 rounded-full badge-silver">
-        Tentativa #{guessNumber} de {maxAttempts}
-      </span>
-
-      {/* Foto do Atleta com Moldura Metálica Prateada */}
+    <div className="w-full max-w-[270px] sm:max-w-[300px] flex flex-col items-center justify-center text-center p-5 sm:p-6 rounded-3xl card-silver-glass gap-3.5 sm:gap-4 transition-all">
+      {/* Foto Ampliada do Atleta com Moldura Metálica Prateada */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={player.photoUrl}
         alt={player.knownName}
-        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-3 border-slate-200/80 shadow-[0_0_20px_rgba(255,255,255,0.25)] bg-slate-950"
+        className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-3 border-slate-200/80 shadow-[0_0_24px_rgba(255,255,255,0.28)] bg-slate-950"
       />
 
-      {/* Nome do Atleta em Prateado Metálico */}
-      <div>
-        <h3 className="font-display text-lg sm:text-xl tracking-wide text-silver-gradient leading-tight break-words">
-          {player.knownName}
-        </h3>
-        <p className="text-xs text-slate-300/80 mt-0.5 truncate max-w-[200px]">
-          {player.name}
-        </p>
-      </div>
+      {/* Nome Conhecido do Atleta em Prateado Metálico */}
+      <h3 className="font-display text-xl sm:text-2xl tracking-wide text-silver-gradient leading-tight break-words">
+        {player.knownName}
+      </h3>
     </div>
   );
 }

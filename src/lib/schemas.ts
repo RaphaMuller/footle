@@ -1,20 +1,45 @@
 import { z } from "zod";
 
+export const LeagueEnum = z.enum([
+  "Premier League",
+  "La Liga",
+  "Serie A",
+  "Bundesliga",
+  "Ligue 1"
+]);
+
+export const PrimaryPositionEnum = z.enum([
+  "Goleiro",
+  "Defensor",
+  "Meio-campista",
+  "Atacante"
+]);
+
+export const PlayerExternalIdsSchema = z.object({
+  wikidata: z.string().regex(/^Q\d+$/).optional(),
+  footballData: z.number().int().positive().optional(),
+  theSportsDb: z.string().optional()
+});
+
 export const PlayerSchema = z.object({
   id: z.number().int().positive(),
-  name: z.string(),
-  knownName: z.string(),
-  nationality: z.string(),
-  continent: z.string(),
-  currentClub: z.string(),
-  league: z.string(),
-  primaryPosition: z.enum(["Goleiro", "Defensor", "Meio-campista", "Atacante"]),
-  positions: z.array(z.string()),
+  externalIds: PlayerExternalIdsSchema.optional(),
+  name: z.string().min(1),
+  knownName: z.string().min(1),
+  nationality: z.string().min(1),
+  continent: z.string().min(1),
+  currentClub: z.string().min(1),
+  league: z.string().min(1),
+  primaryPosition: PrimaryPositionEnum,
+  positions: z.array(z.string()).min(1),
   age: z.number().int().positive(),
   careerGoals: z.number().int().nonnegative(),
-  pastClubs: z.array(z.string()),
-  photoUrl: z.string().url()
+  pastClubs: z.array(z.string()).min(1),
+  photoUrl: z.string().url(),
+  updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
 });
+
+export const PlayersDatabaseSchema = z.array(PlayerSchema);
 
 export type Player = z.infer<typeof PlayerSchema>;
 
@@ -47,9 +72,9 @@ export interface GuessEvaluation {
   categories: {
     nationality: CategoryFeedback;
     currentClub: CategoryFeedback;
+    league: CategoryFeedback;
     position: CategoryFeedback;
     age: CategoryFeedback;
     careerGoals: CategoryFeedback;
-    pastClubs: CategoryFeedback;
   };
 }

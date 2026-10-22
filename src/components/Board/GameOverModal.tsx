@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, RotateCcw, AlertTriangle } from "lucide-react";
+import { X, RotateCcw, AlertTriangle, Timer } from "lucide-react";
 import { Player } from "@/lib/schemas";
 
 /**
@@ -21,8 +21,8 @@ export interface GameOverModalProps {
 }
 
 /**
- * @description Exibe o modal de fim de jogo quando o usuário esgota as 10 tentativas sem acertar.
- * Revela a identidade do craque do dia com sua foto, clube, posição, carreira e botão de reiniciar.
+ * @description Exibe o modal de fim de jogo quando o tempo estoura (90+4' / 10 tentativas esgotadas).
+ * Revela a identidade do craque do dia com o placar final (0 x 1) e botão de revanche.
  * 
  * @param {GameOverModalProps} props - Propriedades do modal de fim de jogo.
  */
@@ -41,7 +41,7 @@ export function GameOverModal({
       onClick={onClose}
     >
       <div
-        className="card-silver-glass border-2 border-amber-500/80 rounded-3xl max-w-md w-full p-6 sm:p-8 flex flex-col items-center gap-4 text-center shadow-2xl relative animate-tile-flip"
+        className="card-silver-glass border-2 border-red-500/80 rounded-3xl max-w-md w-full p-6 sm:p-8 flex flex-col items-center gap-4 text-center shadow-2xl relative animate-tile-flip"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botão Fechar */}
@@ -53,10 +53,16 @@ export function GameOverModal({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Badge de Fim de Jogo */}
-        <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/50 text-amber-300 text-xs font-bold uppercase tracking-wider">
-          <AlertTriangle className="w-4 h-4 text-amber-400" />
-          <span>Fim de jogo! {maxAttempts} tentativas esgotadas</span>
+        {/* Badge de Apito Final */}
+        <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-950/90 border border-red-500/50 text-red-200 text-xs font-bold uppercase tracking-wider">
+          <AlertTriangle className="w-4 h-4 text-red-400" />
+          <span>Apito Final aos 90+4&apos;! Tempo Esgotado</span>
+        </div>
+
+        {/* Placar Simulado da Derrota */}
+        <div className="flex items-center gap-2 px-3.5 py-1 rounded-md bg-slate-950/80 border border-white/15 text-xs font-bold tracking-wider text-slate-300">
+          <Timer className="w-3.5 h-3.5 text-red-400" />
+          <span>VOCÊ 0 x 1 CRAQUE ({maxAttempts}/{maxAttempts} chutes)</span>
         </div>
 
         {/* Foto do Atleta Revelado */}
@@ -75,11 +81,8 @@ export function GameOverModal({
           <h2 className="font-display text-2xl sm:text-3xl text-white mt-0.5">
             {player.knownName}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-            {player.name}
-          </p>
           <p className="text-xs sm:text-sm text-amber-300 font-medium mt-1">
-            {player.currentClub} • {player.primaryPosition} • {player.careerGoals} gols
+            {player.currentClub} • {player.league} • {player.primaryPosition}
           </p>
         </div>
 
@@ -94,7 +97,7 @@ export function GameOverModal({
               className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              <span>Tentar Novamente</span>
+              <span>Jogar Revanche</span>
             </button>
           )}
 

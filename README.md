@@ -13,29 +13,34 @@ Aplicação web interativa inspirada no Spotle/Wordle, onde o objetivo é adivin
 * **Validação de Schemas:** [Zod](https://zod.dev/)
 * **Ícones:** [Lucide React](https://lucide.dev/)
 * **Efeitos Visuais:** [Canvas-Confetti](https://www.npmjs.com/package/canvas-confetti)
+* **CI/CD & Pipeline de Dados:** GitHub Actions + Wikidata SPARQL API
 
 ---
 
 ## 🎮 Mecânica do Jogo
 
-A cada tentativa, o sistema compara 6 atributos entre o jogador palpitado e o jogador secreto do dia:
+A cada tentativa, o sistema avalia 6 atributos organizados em um **grid responsivo 2x3** (2 colunas por 3 linhas):
 
 | Atributo | Feedback Correto (Verde) | Feedback Parcial (Âmbar) | Feedback Incorreto / Direcional (Cinza) |
 | :--- | :--- | :--- | :--- |
 | **🌍 Nacionalidade** | Mesmo país | Mesmo continente | Continente diferente |
-| **🛡️ Clube Atual** | Mesmo clube | Mesma liga nacional | Liga diferente |
+| **🛡️ Clube Atual** | Mesmo clube | Ex-clube em comum no histórico | Nenhum vínculo de clube |
+| **🏆 Liga** | Mesma liga nacional | — | Liga diferente |
 | **⚽ Posição** | Mesma posição exata | Posições adjacentes / mesmo setor | Setor oposto do campo |
 | **🎂 Idade** | Idade exata | — | ⬆️ Mais velho / ⬇️ Mais novo |
 | **🎯 Gols na Carreira** | Número exato | Margem de ±25 gols | ⬆️ Mais gols / ⬇️ Menos gols |
-| **🏛️ Clubes Passados** | Clube em comum no histórico | — | Nenhum clube em comum |
 
 ---
 
 ## ⚡ Arquitetura & Decisões Técnicas
 
-* **Jogador do Dia Determinístico:** Gerado via função de hashing pseudoaleatória baseada na data (`YYYY-MM-DD`). Todos os usuários jogam contra o mesmo atleta sem necessidade de banco de dados.
-* **Custo Zero & Zero Latência:** Dataset bundled em memória com busca e avaliação de palpites em tempo real (< 5ms).
-* **Snap Scroll Vertical:** Navegação fluida entre tentativas com rolagem travada por tentativa e rodapé móvel adaptativo.
+* **Grid 2x3 Responsivo:** Layout vertical de cards (3 linhas x 2 colunas) projetado para eliminar scroll horizontal e oferecer ergonomia em telas mobile e desktop.
+* **Jogador do Dia Determinístico:** Gerado via função pseudoaleatória com base na data (`YYYY-MM-DD`). Todos os usuários recebem o mesmo desafio diário sem necessidade de persistência em servidor.
+* **Custo Zero & Zero Latência:** Dataset estruturado e validado via Zod empacotado em memória com busca e avaliação de palpites em tempo real (< 5ms).
+* **Pipeline Automatizado de Dados (Wikidata):**
+  * Script customizado (`scripts/build-players.ts`) consulta endpoints SPARQL da Wikidata em lotes por liga.
+  * Validação estrita de schema Zod (`PlayersDatabaseSchema`).
+  * Workflow agendado via GitHub Actions (`.github/workflows/sync-players.yml`) para sincronização semanal de atletas, clubes e estatísticas.
 
 ---
 
@@ -52,7 +57,7 @@ A cada tentativa, o sistema compara 6 atributos entre o jogador palpitado e o jo
 git clone https://github.com/RaphaMuller/footle.git
 
 # 2. Acesse a pasta do projeto
-cd spotle_five_ligues_players_in_the_word
+cd footle
 
 # 3. Instale as dependências
 npm install
@@ -67,7 +72,8 @@ Abra [http://localhost:3000](http://localhost:3000) no navegador para jogar.
 
 ## 📦 Scripts Disponíveis
 
-* `npm run dev` — Inicia servidor de desenvolvimento local (Turbopack)
+* `npm run dev` — Inicia servidor de desenvolvimento local com Turbopack
 * `npm run build` — Compila a aplicação para produção
-* `npm run start` — Inicia o servidor de produção
-* `npm run lint` — Executa a análise estática com ESLint
+* `npm run start` — Inicia o servidor compilado de produção
+* `npm run lint` — Executa análise estática de código com ESLint
+* `npm run db:sync` — Executa o pipeline de atualização e normalização dos jogadores via Wikidata

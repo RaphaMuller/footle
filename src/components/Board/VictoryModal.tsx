@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import confetti from "canvas-confetti";
-import { X, Trophy } from "lucide-react";
+import { X, Trophy, Timer } from "lucide-react";
 import { Player } from "@/lib/schemas";
 
 /**
@@ -23,7 +23,7 @@ export interface VictoryModalProps {
 
 /**
  * @description Exibe o modal comemorativo de vitória disparando confetes (canvas-confetti),
- * destacando a foto do craque, seus dados e o placar de chutes até o acerto.
+ * destacando a foto do craque, seus dados e o minuto simulado em que o gol foi marcado.
  * 
  * @param {VictoryModalProps} props - Propriedades do modal de vitória.
  */
@@ -65,6 +65,11 @@ export function VictoryModal({
 
   if (!isOpen || !player) return null;
 
+  const goalMinute =
+    attempts >= maxAttempts
+      ? "90+4'"
+      : `${String(attempts * 9).padStart(2, "0")}'`;
+
   return (
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn"
@@ -86,7 +91,7 @@ export function VictoryModal({
         {/* Badge de Vitória */}
         <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-wider">
           <Trophy className="w-4 h-4 text-amber-400" />
-          <span>Golaço! Você acertou!</span>
+          <span>Golaço aos {goalMinute}! Vitória 1 x 0</span>
         </div>
 
         {/* Foto do Craque */}
@@ -102,17 +107,17 @@ export function VictoryModal({
           <h2 className="font-display text-2xl sm:text-3xl text-white">
             {player.knownName}
           </h2>
-          <p className="text-xs sm:text-sm text-text-sub mt-0.5">
-            {player.name}
-          </p>
           <p className="text-xs sm:text-sm text-emerald-300 font-medium mt-1">
-            {player.currentClub} • {player.primaryPosition} • {player.careerGoals} gols
+            {player.currentClub} • {player.league} • {player.primaryPosition}
           </p>
         </div>
 
-        {/* Desempenho */}
-        <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-3 flex flex-col gap-1">
-          <span className="text-xs text-text-sub">Placar da Rodada</span>
+        {/* Desempenho / Placar da Partida */}
+        <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-3 flex flex-col items-center gap-1">
+          <span className="inline-flex items-center gap-1 text-xs text-emerald-300 font-semibold">
+            <Timer className="w-3.5 h-3.5" />
+            Gol marcado aos {goalMinute} do jogo
+          </span>
           <span className="text-base sm:text-lg font-bold text-white">
             Decifrado em <strong className="text-emerald-400">{attempts}</strong> de {maxAttempts} tentativas!
           </span>

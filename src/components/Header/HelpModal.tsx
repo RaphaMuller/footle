@@ -51,21 +51,21 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <div className="flex items-start gap-2.5">
             <span className="w-4 h-4 rounded-full bg-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-text-main">Verde:</strong> Informação exata (mesma nacionalidade, mesmo clube, mesma posição).
+              <strong className="text-text-main">Verde:</strong> Informação exata (mesma nacionalidade, mesmo clube atual, mesma liga, mesma posição).
             </div>
           </div>
 
           <div className="flex items-start gap-2.5">
             <span className="w-4 h-4 rounded-full bg-amber-500 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-text-main">Amarelo:</strong> Parcial (mesmo continente, mesma liga ou clube em comum no histórico).
+              <strong className="text-text-main">Amarelo:</strong> Parcial (mesmo continente, ex-clube em comum no histórico, setores de campo adjacentes ou gols próximos).
             </div>
           </div>
 
           <div className="flex items-start gap-2.5">
             <span className="w-4 h-4 rounded-full bg-slate-700 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-text-main">Cinza / Setas:</strong> Não bate. Para idade e gols, setas indicam se o jogador secreto é mais velho/novo (⬆/⬇).
+              <strong className="text-text-main">Cinza / Setas:</strong> Não bate. Para idade e gols, setas indicam se o jogador secreto é mais velho/novo ou tem mais/menos gols (⬆/⬇).
             </div>
           </div>
         </div>
