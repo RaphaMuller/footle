@@ -12,24 +12,24 @@ export interface PlayerAttemptCardProps {
 }
 
 /**
- * @description Exibe o card isolado com os dados do jogador palpitado na tentativa:
- * foto oficial ampliada com aro metálico e nome conhecido em destaque.
+ * @description Exibe o bloco do jogador (30% do card):
+ * foto ampliada em destaque e nome compacto com tipografia limpa.
  * 
- * @param {PlayerAttemptCardProps} props - Propriedades do card do atleta.
+ * @param {PlayerAttemptCardProps} props - Propriedades do jogador.
  */
 export function PlayerAttemptCard({ player }: PlayerAttemptCardProps) {
   return (
-    <div className="w-full max-w-[270px] sm:max-w-[300px] flex flex-col items-center justify-center text-center p-5 sm:p-6 rounded-3xl card-silver-glass gap-3.5 sm:gap-4 transition-all">
-      {/* Foto Ampliada do Atleta com Moldura Metálica Prateada */}
+    <div className="w-full h-full flex flex-col items-center justify-center text-center p-1.5 sm:p-2 gap-1.5 min-h-0">
+      {/* Foto Ampliada do Atleta */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={player.photoUrl}
         alt={player.knownName}
-        className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-3 border-slate-200/80 shadow-[0_0_24px_rgba(255,255,255,0.28)] bg-slate-950"
+        className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full object-cover border-2 border-slate-200/80 shadow-lg bg-slate-950 shrink-0"
       />
 
-      {/* Nome Conhecido do Atleta em Prateado Metálico */}
-      <h3 className="font-display text-xl sm:text-2xl tracking-wide text-silver-gradient leading-tight break-words">
+      {/* Nome Reduzido e Proporcional */}
+      <h3 className="font-sans font-bold text-xs sm:text-sm lg:text-sm tracking-wide text-silver-gradient leading-tight break-words max-w-full px-1 text-center">
         {player.knownName}
       </h3>
     </div>

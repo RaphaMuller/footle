@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${luckiestGuy.variable} ${inter.variable}`}>
       <body className="relative min-h-screen">
-        {/* Ilustração do Campo de Futebol Completo em CSS */}
+        {/* Ilustração do Campo de Futebol Completo em Tela Inteira */}
         <div className="pitch-overlay" aria-hidden="true">
           {/* Áreas dos Gols (Esquerda e Direita) */}
           <div className="pitch-goal pitch-goal-left" />

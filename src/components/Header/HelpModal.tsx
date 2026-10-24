@@ -72,7 +72,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
 
         <button
           onClick={onClose}
-          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors mt-2"
+          className="w-full py-2.5 btn-gradient-primary font-semibold rounded-xl mt-2 cursor-pointer"
         >
           Entendido
         </button>

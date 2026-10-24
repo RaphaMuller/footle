@@ -5,9 +5,6 @@ import { GuessEvaluation } from "@/lib/schemas";
 import { GuessRow } from "./GuessRow";
 import { InitialPromptCard } from "./InitialPromptCard";
 
-/**
- * Contrato de propriedades do componente GameBoard.
- */
 export interface GameBoardProps {
   /** Lista de palpites já avaliados na rodada atual */
   guesses: GuessEvaluation[];
@@ -16,9 +13,10 @@ export interface GameBoardProps {
 }
 
 /**
- * @description Orquestrador principal do tabuleiro de jogo.
- * Renderiza o estado inicial (InitialPromptCard) quando não há palpites,
- * ou o contêiner de rolagem magnética que ocupa 100% da viewport útil abaixo da navbar.
+ * @description Container principal do tabuleiro centralizado ao meio da tela:
+ * - Largura máxima configurada entre 5xl e 6xl (w-full max-w-5xl lg:max-w-6xl)
+ * - Scroll vertical invisível (classe .scrollbar-hidden)
+ * - Auto-scroll para o palpite mais recente no topo
  * 
  * @param {GameBoardProps} props - Propriedades com os palpites realizados.
  */
@@ -32,49 +30,25 @@ export function GameBoard({ guesses, maxAttempts = 10 }: GameBoardProps) {
     }
   }, [guesses.length]);
 
-  // Navegação suave complementar por teclado (ArrowUp / ArrowDown)
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignora atalho se o usuário estiver digitando no campo de busca
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-
-      if (!containerRef.current) return;
-      const slotHeight = containerRef.current.clientHeight;
-
-      if (e.key === "ArrowDown" || e.key === "PageDown") {
-        e.preventDefault();
-        containerRef.current.scrollBy({ top: slotHeight, behavior: "smooth" });
-      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        e.preventDefault();
-        containerRef.current.scrollBy({ top: -slotHeight, behavior: "smooth" });
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   if (guesses.length === 0) {
-    return <InitialPromptCard maxAttempts={maxAttempts} />;
+    return (
+      <div className="w-full max-w-5xl lg:max-w-6xl h-full flex items-center justify-center p-2 sm:p-4">
+        <InitialPromptCard maxAttempts={maxAttempts} />
+      </div>
+    );
   }
 
   return (
-    /* Janela unitária que engloba 100% da tela abaixo da navbar, scrollbar invisível e borda invisível */
     <div
       ref={containerRef}
-      className="w-full h-full flex-1 overflow-y-auto scroll-smooth snap-y snap-mandatory scrollbar-hidden border-none bg-transparent"
+      className="w-full max-w-5xl lg:max-w-6xl h-full sm:max-h-[82vh] overflow-y-auto scrollbar-hidden flex flex-col items-center py-1 sm:py-2 px-1 sm:px-4 gap-4 sm:gap-6 min-h-0"
     >
       {guesses.map((guess) => (
         <div
           key={guess.id}
-          className="w-full h-full snap-always snap-center shrink-0 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-2"
+          className="w-full h-full min-h-[calc(100dvh-5.5rem)] sm:min-h-0 sm:h-auto shrink-0 flex justify-center"
         >
-          <GuessRow guess={guess} maxAttempts={maxAttempts} />
+          <GuessRow guess={guess} />
         </div>
       ))}
     </div>

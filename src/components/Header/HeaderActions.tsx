@@ -16,7 +16,7 @@ export interface HeaderActionsProps {
 }
 
 /**
- * @description Botões de ação rápida localizados no canto direito do cabeçalho:
+ * @description Botões de ação rápida estilizados com o gradiente padrão:
  * Reiniciar partida, Ajuda ("Como Jogar") e Estatísticas da conta.
  * 
  * @param {HeaderActionsProps} props - Propriedades dos botões de ação.
@@ -36,9 +36,9 @@ export function HeaderActions({
           onClick={onReset}
           title="Reiniciar Jogo"
           aria-label="Reiniciar Jogo"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-card border border-border-subtle hover:border-emerald-500/40 hover:bg-emerald-950/30 text-text-sub hover:text-emerald-400 flex items-center justify-center transition-all cursor-pointer backdrop-blur-md"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl btn-gradient-primary flex items-center justify-center transition-all cursor-pointer shadow-md"
         >
-          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </button>
       )}
 
@@ -49,9 +49,9 @@ export function HeaderActions({
         onClick={onOpenHelp}
         title="Como Jogar"
         aria-label="Como Jogar"
-        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-card border border-border-subtle hover:border-emerald-500/40 hover:bg-emerald-950/30 text-text-sub hover:text-text-main flex items-center justify-center transition-all cursor-pointer backdrop-blur-md"
+        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl btn-gradient-primary flex items-center justify-center transition-all cursor-pointer shadow-md"
       >
-        <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+        <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
       </button>
 
       {/* Botão de Estatísticas */}
@@ -61,9 +61,9 @@ export function HeaderActions({
         onClick={onOpenStats}
         title="Estatísticas"
         aria-label="Estatísticas"
-        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-card border border-border-subtle hover:border-emerald-500/40 hover:bg-emerald-950/30 text-text-sub hover:text-text-main flex items-center justify-center transition-all cursor-pointer backdrop-blur-md"
+        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl btn-gradient-primary flex items-center justify-center transition-all cursor-pointer shadow-md"
       >
-        <BarChart2 className="w-4 h-4 sm:w-5 sm:h-5" />
+        <BarChart2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
       </button>
     </div>
   );

@@ -82,7 +82,7 @@ export function HeaderSearch({
               ? "Desafio finalizado!"
               : "Digite o jogador (ex: Haaland, Vini Jr)..."
           }
-          className="w-full h-10 sm:h-11 pl-10 pr-9 bg-surface-card border border-border-subtle rounded-xl text-text-main text-sm sm:text-base outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 backdrop-blur-md transition-all placeholder:text-text-sub/70 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-10 sm:h-11 pl-10 pr-9 bg-gradient-primary border border-white/20 rounded-xl text-white text-sm sm:text-base outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/25 shadow-lg backdrop-blur-md transition-all placeholder:text-slate-200/70 disabled:opacity-50 disabled:cursor-not-allowed"
           autoComplete="off"
         />
 

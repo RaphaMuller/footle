@@ -126,7 +126,7 @@ export function VictoryModal({
         {/* Botão de Fechar e Ver Tabuleiro */}
         <button
           onClick={onClose}
-          className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-950/40 cursor-pointer"
+          className="w-full py-3 btn-gradient-primary font-bold rounded-xl shadow-lg cursor-pointer"
         >
           Ver Tabuleiro Completo
         </button>

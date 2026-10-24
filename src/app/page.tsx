@@ -1,77 +1,137 @@
 "use client";
 
-import React, { useState } from "react";
-import { Header } from "@/components/Header/Header";
+import React, { useState, useEffect } from "react";
+import { HeaderSearch } from "@/components/Header/HeaderSearch";
 import { GameBoard } from "@/components/Board/GameBoard";
-import { VictoryModal } from "@/components/Board/VictoryModal";
-import { GameOverModal } from "@/components/Board/GameOverModal";
+import { Button } from "@/components/common/Button";
+import { ModalViewRules } from "@/components/modals/ModalViewRules";
+import { ModalViewStats, UserStats } from "@/components/modals/ModalViewStats";
 import { useGame } from "@/hooks/useGame";
+import { useModal } from "@/hooks/useModal";
 import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
+import { HelpCircle, BarChart2 } from "lucide-react";
+
+const DEFAULT_STATS: UserStats = {
+  played: 0,
+  won: 0,
+  lost: 0,
+  currentStreak: 0,
+  maxStreak: 0
+};
 
 /**
- * @description Página principal da aplicação Footle.
- * Orquestra o ciclo de vida do jogo, vinculando o Header de busca,
- * o GameBoard em tela cheia (100% da viewport) e os modais de encerramento (vitória e derrota).
+ * @description Página principal com Campo de Futebol em Tela Inteira.
+ * Código enxuto e dinâmico: modais desacoplados em views especializadas.
  */
 export default function Home() {
   const {
     guesses,
     isWon,
     isGameOver,
-    secretPlayer,
     submitGuess,
-    resetGame,
     guessedPlayerIds,
-    maxAttempts
   } = useGame();
 
-  const [dismissedVictory, setDismissedVictory] = useState(false);
-  const [dismissedGameOver, setDismissedGameOver] = useState(false);
+  const rulesModal = useModal(false);
+  const statsModal = useModal(false);
 
-  const isVictoryModalOpen = isWon && !dismissedVictory;
-  const isGameOverModalOpen = isGameOver && !dismissedGameOver;
+  const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
+
+  // Carrega histórico do usuário
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("footle_user_stats");
+      if (saved) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setStats(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.warn("Erro ao ler estatísticas:", e);
+    }
+  }, []);
+
+  // Registra desfecho da rodada
+  useEffect(() => {
+    if (!isWon && !isGameOver) return;
+
+    try {
+      const today = new Date().toISOString().split("T")[0];
+      const recordedKey = `footle_recorded_${today}`;
+      if (localStorage.getItem(recordedKey)) return;
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStats((prev) => {
+        const won = isWon ? prev.won + 1 : prev.won;
+        const lost = isGameOver && !isWon ? prev.lost + 1 : prev.lost;
+        const played = prev.played + 1;
+        const currentStreak = isWon ? prev.currentStreak + 1 : 0;
+        const maxStreak = Math.max(prev.maxStreak, currentStreak);
+
+        const updated = { played, won, lost, currentStreak, maxStreak };
+        localStorage.setItem("footle_user_stats", JSON.stringify(updated));
+        localStorage.setItem(recordedKey, "true");
+        return updated;
+      });
+    } catch (e) {
+      console.warn("Erro ao atualizar estatísticas:", e);
+    }
+  }, [isWon, isGameOver]);
 
   const handleSelectPlayer = (player: SearchPlayerItem) => {
     submitGuess(player.id);
   };
 
-  const handleReset = () => {
-    setDismissedVictory(false);
-    setDismissedGameOver(false);
-    resetGame();
-  };
-
   return (
-    <div className="h-screen max-h-screen overflow-hidden flex flex-col">
-      {/* Header com Busca (desabilitada se venceu ou atingiu 10 palpites) */}
-      <Header
-        onSelectPlayer={handleSelectPlayer}
-        disabled={isWon || isGameOver}
-        excludePlayerIds={guessedPlayerIds}
-        onReset={handleReset}
-      />
+    <div className="h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col p-[var(--pitch-margin)]">
+      {/* Topo: Em mobile, flex row direto sem absolute; em desktop, centralizado com botões à direita */}
+      <div className="w-full flex items-center justify-between sm:justify-center gap-2 pt-2 sm:pt-5 pb-2 sm:pb-3 px-1 sm:px-4 shrink-0 z-30 sm:relative">
+        <div className="flex-1 sm:flex-initial sm:w-full sm:max-w-lg min-w-0">
+          <HeaderSearch
+            onSelectPlayer={handleSelectPlayer}
+            disabled={isWon || isGameOver}
+            excludePlayerIds={guessedPlayerIds}
+          />
+        </div>
 
-      {/* Conteúdo Principal do Jogo (100% da tela abaixo da Navbar) */}
-      <main className="flex-1 w-full h-[calc(100vh-var(--header-height))] overflow-hidden flex flex-col relative">
-        <GameBoard guesses={guesses} maxAttempts={maxAttempts} />
+        <div className="flex items-center gap-1.5 shrink-0 sm:absolute sm:right-6 lg:right-8">
+          {/* Botão de Regras */}
+          <Button
+            variant="gradient"
+            size="icon"
+            onClick={rulesModal.open}
+            title="Regras do Jogo"
+            aria-label="Regras do Jogo"
+          >
+            <HelpCircle className="w-5 h-5 text-white" />
+          </Button>
+
+          {/* Botão de Estatísticas */}
+          <Button
+            variant="gradient"
+            size="icon"
+            onClick={statsModal.open}
+            title="Estatísticas e WinStreak"
+            aria-label="Estatísticas e WinStreak"
+          >
+            <BarChart2 className="w-5 h-5 text-white" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Espaço delimitado pelo campo com o container de palpites */}
+      <main className="flex-1 w-full min-h-0 flex flex-col items-center justify-center p-2 sm:p-4">
+        <GameBoard guesses={guesses} maxAttempts={10} />
       </main>
 
-      {/* Modal de Vitória com Parabéns e Estatísticas */}
-      <VictoryModal
-        isOpen={isVictoryModalOpen}
-        onClose={() => setDismissedVictory(true)}
-        player={secretPlayer}
-        attempts={guesses.length}
-        maxAttempts={maxAttempts}
+      {/* Views de Modais Isoladas com maxWidth="lg" */}
+      <ModalViewRules
+        isOpen={rulesModal.isOpen}
+        onClose={rulesModal.close}
       />
-
-      {/* Modal de Fim de Jogo (10 tentativas esgotadas) */}
-      <GameOverModal
-        isOpen={isGameOverModalOpen}
-        onClose={() => setDismissedGameOver(true)}
-        player={secretPlayer}
-        maxAttempts={maxAttempts}
-        onReset={handleReset}
+      <ModalViewStats
+        isOpen={statsModal.isOpen}
+        onClose={statsModal.close}
+        stats={stats}
       />
     </div>
   );

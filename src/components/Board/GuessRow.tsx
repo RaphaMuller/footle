@@ -1,125 +1,136 @@
 "use client";
 
 import React from "react";
-import { GuessEvaluation, Player } from "@/lib/schemas";
-import { PlayerAttemptCard } from "./PlayerAttemptCard";
-import { CategoryFeedbackGrid } from "./CategoryFeedbackGrid";
-import { Timer } from "lucide-react";
+import { GuessEvaluation } from "@/lib/schemas";
+import { CardRoot } from "@/components/common/CardRoot";
+import { CardPlayer } from "@/components/common/CardPlayer";
+import { CardTile } from "@/components/common/CardTile";
+import { Globe, Shield, Trophy, Footprints, Calendar, Flame } from "lucide-react";
 
-/**
- * Contrato de propriedades do componente GuessRow.
- */
 export interface GuessRowProps {
   /** Objeto de avaliação do palpite atual */
   guess: GuessEvaluation;
-  /** Limite máximo de tentativas da partida */
-  maxAttempts?: number;
 }
 
 /**
- * Calcula o tempo simulado de partida (09' até 90+4') e o estado do placar
- * com base no número da tentativa e no resultado do chute.
+ * @description Card do palpite com headers e separadores conectados em cruz:
+ * - Fundo com gradiente linear (#8399A2 para #EEF2F3)
+ * - Linhas pretas/slate (border-slate-700/60)
+ * - Zero sombras no card e container
+ * - Conexão unificada do header do jogador com o header de informações
  */
-function getMatchClockState(
-  guessNumber: number,
-  maxAttempts: number,
-  isVictory: boolean
-) {
-  const isFinalAttempt = guessNumber >= maxAttempts;
-  const isDangerZone = !isVictory && guessNumber === maxAttempts - 1;
-  const isBlowoutLoss = !isVictory && isFinalAttempt;
+export function GuessRow({ guess }: GuessRowProps) {
+  const { guessedPlayer, categories } = guess;
 
-  const minuteLabel = isFinalAttempt
-    ? "90+4'"
-    : `${String(guessNumber * 9).padStart(2, "0")}'`;
-
-  let phaseLabel = "1º TEMPO";
-  if (isVictory) {
-    phaseLabel = guessNumber >= maxAttempts ? "GOL NOS ACRÉSCIMOS!" : "GOLAÇO!";
-  } else if (isBlowoutLoss) {
-    phaseLabel = "APITO FINAL • DERROTA";
-  } else if (isDangerZone) {
-    phaseLabel = "PRESSÃO FINAL!";
-  } else if (guessNumber === 5) {
-    phaseLabel = "INTERVALO • 1ºT";
-  } else if (guessNumber > 5) {
-    phaseLabel = "2º TEMPO";
-  }
-
-  const homeScore = isVictory ? 1 : 0;
-  const awayScore = isBlowoutLoss ? 1 : 0;
-
-  return {
-    minuteLabel,
-    phaseLabel,
-    homeScore,
-    awayScore,
-    isBlowoutLoss,
-    isVictory
-  };
-}
-
-/**
- * @description Linha de palpite do tabuleiro. Orquestra a divisão 50/50 entre
- * o card de identificação do atleta (esquerda), o placar prateado/branco com letras pretas
- * e o grid 2x3 vertical de feedback (direita).
- * 
- * @param {GuessRowProps} props - Propriedades com os dados do palpite.
- */
-export function GuessRow({ guess, maxAttempts = 10 }: GuessRowProps) {
-  const { guessedPlayer, categories, guessNumber, isVictory } = guess;
-  const clock = getMatchClockState(guessNumber, maxAttempts, isVictory);
+  const renderTiles = () => (
+    <>
+      <CardTile
+        label="Nacionalidade"
+        icon={<Globe className="w-3.5 h-3.5 text-white/80" />}
+        feedback={categories.nationality}
+      />
+      <CardTile
+        label="Clube"
+        icon={<Shield className="w-3.5 h-3.5 text-white/80" />}
+        feedback={categories.currentClub}
+      />
+      <CardTile
+        label="Liga"
+        icon={<Trophy className="w-3.5 h-3.5 text-white/80" />}
+        feedback={categories.league}
+      />
+      <CardTile
+        label="Posição"
+        icon={<Footprints className="w-3.5 h-3.5 text-white/80" />}
+        feedback={categories.position}
+      />
+      <CardTile
+        label="Idade"
+        icon={<Calendar className="w-3.5 h-3.5 text-white/80" />}
+        feedback={categories.age}
+      />
+      <CardTile
+        label="Gols"
+        icon={<Flame className="w-3.5 h-3.5 text-white/80" />}
+        feedback={categories.careerGoals}
+      />
+    </>
+  );
 
   return (
-    <div className="relative w-full grid grid-cols-1 md:grid-cols-2 items-center py-1 animate-fadeIn transition-all duration-300 ease-out">
-      {/* 1. Lado Esquerdo: Bloco de 50% com o Card da Tentativa do Atleta */}
-      <div className="w-full h-full flex items-center justify-center p-2 sm:p-3">
-        <PlayerAttemptCard player={guessedPlayer as unknown as Player} />
-      </div>
+    <CardRoot
+      variant="apple-glass"
+      className="w-full h-full flex flex-col transition-all duration-300 animate-fadeIn min-h-0 overflow-hidden"
+    >
+      {/* =========================================================
+          DESKTOP (md+): Barra de headers unificada com divisores em cruz
+          ========================================================= */}
+      <div className="hidden md:flex flex-col w-full">
+        {/* Barra de Cabeçalhos Conectada */}
+        <div className="flex items-center w-full bg-white/[0.03]">
+          <div className="w-[30%] py-2 text-center text-xs uppercase font-bold tracking-widest text-white/40">
+            Jogador
+          </div>
+          <div className="w-px self-stretch bg-white/10 shrink-0" aria-hidden="true" />
+          <div className="flex-1 py-2 text-center text-xs uppercase font-bold tracking-widest text-white/40">
+            Informações do Jogador
+          </div>
+        </div>
 
-      {/* 2. Centro da Tela: Placar em Branco/Prateado de Destaque com Letras Pretas */}
-      <div className="flex justify-center my-1.5 md:my-0 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-10 pointer-events-none">
-        <div className="min-w-[180px] sm:min-w-[200px] rounded-2xl border border-white/80 bg-gradient-to-b from-white via-slate-100 to-slate-200 px-4 py-2.5 flex flex-col items-center gap-1.5 shadow-[0_15px_35px_rgba(0,0,0,0.5),0_0_25px_rgba(255,255,255,0.45)] backdrop-blur-xl">
-          {/* Topo: Relógio e Nome da Fase (Sem contorno e sem fundo) */}
-          <div className="w-full flex items-center justify-between gap-2 border-b border-slate-300/80 pb-1">
-            <span className="inline-flex items-center gap-1 text-xs font-black tracking-wide text-slate-950">
-              <Timer className="w-3.5 h-3.5 text-slate-900 shrink-0" />
-              <span>{clock.minuteLabel}</span>
-            </span>
+        {/* Linha horizontal contínua unificando os blocos */}
+        <div className="w-full h-px bg-white/10" aria-hidden="true" />
 
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 truncate">
-              {clock.phaseLabel}
-            </span>
+        {/* Corpo do Palpite (Atleta 30% | Grid 70%) */}
+        <div className="flex items-stretch w-full min-h-0">
+          <div className="w-[30%] p-3.5 flex items-center justify-center min-h-0 shrink-0">
+            <CardPlayer
+              photoUrl={guessedPlayer.photoUrl}
+              name={guessedPlayer.knownName}
+              size="md"
+              colorScheme="apple"
+            />
           </div>
 
-          {/* Meio: Placar VOCÊ x CRAQUE */}
-          <div className="w-full flex items-center justify-between px-1 py-0.5">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-900">
-              VOCÊ
-            </span>
+          {/* Divisor vertical conectado diretamente à barra de header */}
+          <div className="w-px self-stretch bg-white/10 shrink-0" aria-hidden="true" />
 
-            <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-lg bg-white/90 border border-slate-300/90 shadow-sm font-display text-base sm:text-lg tracking-widest text-slate-950">
-              <span className="font-black">{clock.homeScore}</span>
-              <span className="text-slate-400 text-xs">x</span>
-              <span className="font-black">{clock.awayScore}</span>
+          <div className="flex-1 p-3.5 flex items-center justify-center min-h-0">
+            <div className="grid grid-cols-3 grid-rows-2 gap-2.5 w-full h-full">
+              {renderTiles()}
             </div>
-
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-900">
-              CRAQUE
-            </span>
           </div>
-
-          {/* Rodapé: Contador de Tentativas */}
-          <span className="text-[10px] uppercase tracking-widest font-bold text-slate-600">
-            Tentativa #{guessNumber} de {maxAttempts}
-          </span>
         </div>
       </div>
 
-      {/* 3. Lado Direito: Bloco de 50% com o Grid 2x3 Vertical */}
-      <div className="w-full h-full flex items-center justify-center p-2 sm:p-3">
-        <CategoryFeedbackGrid categories={categories} />
+      {/* =========================================================
+          MOBILE (< md): Conexão vertical em 100% da altura do bloco
+          ========================================================= */}
+      <div className="md:hidden flex flex-col w-full h-full justify-between">
+        <div className="flex flex-col w-full shrink-0">
+          <div className="py-1.5 text-center text-[10px] uppercase font-bold tracking-widest text-white/40 border-b border-white/10 bg-white/[0.03]">
+            Jogador
+          </div>
+          <div className="py-2.5 px-2 flex items-center justify-center">
+            <CardPlayer
+              photoUrl={guessedPlayer.photoUrl}
+              name={guessedPlayer.knownName}
+              size="md"
+              colorScheme="apple"
+            />
+          </div>
+        </div>
+
+        <div className="w-full h-px bg-white/10 shrink-0" aria-hidden="true" />
+
+        <div className="flex flex-col w-full flex-1 justify-between pb-1.5 min-h-0">
+          <div className="py-1.5 text-center text-[10px] uppercase font-bold tracking-widest text-white/40 border-b border-white/10 bg-white/[0.03] shrink-0">
+            Informações do Jogador
+          </div>
+          <div className="p-2 flex-1 grid grid-cols-2 grid-rows-3 gap-2 w-full min-h-0">
+            {renderTiles()}
+          </div>
+        </div>
       </div>
-    </div>
+    </CardRoot>
   );
 }

@@ -15,16 +15,14 @@ export interface CategoryFeedbackGridProps {
 }
 
 /**
- * @description Exibe o grid 2x3 em escala vertical (2 colunas por 3 linhas) com os 6 cards unitários de feedback:
- * Linha 1: Nacionalidade, Clube Atual.
- * Linha 2: Liga, Posição.
- * Linha 3: Idade, Gols na Carreira.
+ * @description Exibe o grid de feedback em formato 2:3 na horizontal (3 colunas por 2 linhas),
+ * ocupando o bloco de forma fluida e responsiva sem valores arbitrários.
  * 
  * @param {CategoryFeedbackGridProps} props - Propriedades com as 6 categorias avaliadas.
  */
 export function CategoryFeedbackGrid({ categories }: CategoryFeedbackGridProps) {
   return (
-    <div className="w-full max-w-[380px] sm:max-w-[420px] grid grid-cols-2 gap-2 sm:gap-2.5 items-center justify-center">
+    <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2 items-stretch justify-center">
       <CategoryTile
         feedback={categories.nationality}
         categoryKey="nationality"
