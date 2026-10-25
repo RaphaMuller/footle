@@ -9,7 +9,7 @@ import { PlayersDatabaseSchema, type Player } from "../src/lib/schemas.ts";
  * respeitando 100% os limites e políticas da API da Wikimedia Foundation.
  */
 const BIG_FIVE_CLUBS: Array<{ qid: string; name: string; league: string }> = [
-  // Premier League
+  // Premier League (20 clubes 2024/2025)
   { qid: "Q50602", name: "Manchester City", league: "Premier League" },
   { qid: "Q9617", name: "Arsenal", league: "Premier League" },
   { qid: "Q1130849", name: "Liverpool", league: "Premier League" },
@@ -20,27 +20,40 @@ const BIG_FIVE_CLUBS: Array<{ qid: string; name: string; league: string }> = [
   { qid: "Q18711", name: "Aston Villa", league: "Premier League" },
   { qid: "Q18747", name: "West Ham United", league: "Premier League" },
   { qid: "Q19453", name: "Brighton & Hove Albion", league: "Premier League" },
-  { qid: "Q18708", name: "Everton", league: "Premier League" },
-  { qid: "Q18721", name: "Fulham", league: "Premier League" },
-  { qid: "Q19446", name: "Bournemouth", league: "Premier League" },
-  { qid: "Q19477", name: "Crystal Palace", league: "Premier League" },
-  { qid: "Q19456", name: "Brentford", league: "Premier League" },
+  { qid: "Q5794", name: "Everton", league: "Premier League" },
+  { qid: "Q18708", name: "Fulham", league: "Premier League" },
+  { qid: "Q19568", name: "Bournemouth", league: "Premier League" },
+  { qid: "Q19467", name: "Crystal Palace", league: "Premier League" },
+  { qid: "Q19571", name: "Brentford", league: "Premier League" },
   { qid: "Q19500", name: "Wolverhampton", league: "Premier League" },
   { qid: "Q19490", name: "Nottingham Forest", league: "Premier League" },
-  // La Liga
+  { qid: "Q19481", name: "Leicester City", league: "Premier League" },
+  { qid: "Q9653", name: "Ipswich Town", league: "Premier League" },
+  { qid: "Q18732", name: "Southampton", league: "Premier League" },
+
+  // La Liga (20 clubes 2024/2025)
   { qid: "Q8682", name: "Real Madrid", league: "La Liga" },
   { qid: "Q7156", name: "Barcelona", league: "La Liga" },
   { qid: "Q8701", name: "Atlético de Madrid", league: "La Liga" },
   { qid: "Q8687", name: "Athletic Bilbao", league: "La Liga" },
   { qid: "Q10315", name: "Real Sociedad", league: "La Liga" },
-  { qid: "Q12278", name: "Villarreal", league: "La Liga" },
+  { qid: "Q12297", name: "Villarreal", league: "La Liga" },
   { qid: "Q8723", name: "Real Betis", league: "La Liga" },
   { qid: "Q10329", name: "Sevilla", league: "La Liga" },
   { qid: "Q10333", name: "Valencia", league: "La Liga" },
   { qid: "Q11945", name: "Girona", league: "La Liga" },
   { qid: "Q8749", name: "Celta de Vigo", league: "La Liga" },
   { qid: "Q10286", name: "Osasuna", league: "La Liga" },
-  // Serie A
+  { qid: "Q8806", name: "Getafe", league: "La Liga" },
+  { qid: "Q10300", name: "Rayo Vallecano", league: "La Liga" },
+  { qid: "Q8835", name: "Mallorca", league: "La Liga" },
+  { qid: "Q11979", name: "Las Palmas", league: "La Liga" },
+  { qid: "Q223620", name: "Deportivo Alavés", league: "La Liga" },
+  { qid: "Q8780", name: "Espanyol", league: "La Liga" },
+  { qid: "Q856119", name: "Leganés", league: "La Liga" },
+  { qid: "Q10319", name: "Real Valladolid", league: "La Liga" },
+
+  // Serie A (20 clubes 2024/2025)
   { qid: "Q631", name: "Inter de Milão", league: "Serie A" },
   { qid: "Q1543", name: "Milan", league: "Serie A" },
   { qid: "Q1422", name: "Juventus", league: "Serie A" },
@@ -51,7 +64,18 @@ const BIG_FIVE_CLUBS: Array<{ qid: string; name: string; league: string }> = [
   { qid: "Q2052", name: "Fiorentina", league: "Serie A" },
   { qid: "Q1893", name: "Bologna", league: "Serie A" },
   { qid: "Q2768", name: "Torino", league: "Serie A" },
-  // Bundesliga
+  { qid: "Q289482", name: "Monza", league: "Serie A" },
+  { qid: "Q2074", name: "Genoa", league: "Serie A" },
+  { qid: "Q2798", name: "Udinese", league: "Serie A" },
+  { qid: "Q1900", name: "Cagliari", league: "Serie A" },
+  { qid: "Q8639", name: "Hellas Verona", league: "Serie A" },
+  { qid: "Q13391", name: "Lecce", league: "Serie A" },
+  { qid: "Q6703", name: "Empoli", league: "Serie A" },
+  { qid: "Q2693", name: "Parma", league: "Serie A" },
+  { qid: "Q1120838", name: "Como", league: "Serie A" },
+  { qid: "Q501245", name: "Venezia", league: "Serie A" },
+
+  // Bundesliga (18 clubes 2024/2025)
   { qid: "Q15789", name: "Bayern de Munique", league: "Bundesliga" },
   { qid: "Q104761", name: "Bayer Leverkusen", league: "Bundesliga" },
   { qid: "Q41420", name: "Borussia Dortmund", league: "Bundesliga" },
@@ -61,15 +85,35 @@ const BIG_FIVE_CLUBS: Array<{ qid: string; name: string; league: string }> = [
   { qid: "Q101859", name: "VfL Wolfsburg", league: "Bundesliga" },
   { qid: "Q101959", name: "Borussia Mönchengladbach", league: "Bundesliga" },
   { qid: "Q106394", name: "SC Freiburg", league: "Bundesliga" },
-  // Ligue 1
+  { qid: "Q22707", name: "Hoffenheim", league: "Bundesliga" },
+  { qid: "Q162251", name: "Heidenheim", league: "Bundesliga" },
+  { qid: "Q51976", name: "Werder Bremen", league: "Bundesliga" },
+  { qid: "Q15755", name: "Augsburg", league: "Bundesliga" },
+  { qid: "Q141971", name: "Union Berlin", league: "Bundesliga" },
+  { qid: "Q105861", name: "VfL Bochum", league: "Bundesliga" },
+  { qid: "Q105254", name: "Mainz 05", league: "Bundesliga" },
+  { qid: "Q6463", name: "FC St. Pauli", league: "Bundesliga" },
+  { qid: "Q157828", name: "Holstein Kiel", league: "Bundesliga" },
+
+  // Ligue 1 (18 clubes 2024/2025)
   { qid: "Q483020", name: "Paris Saint-Germain", league: "Ligue 1" },
-  { qid: "Q17479", name: "Monaco", league: "Ligue 1" },
+  { qid: "Q180305", name: "Monaco", league: "Ligue 1" },
   { qid: "Q132885", name: "Olympique de Marseille", league: "Ligue 1" },
   { qid: "Q704", name: "Olympique Lyonnais", league: "Ligue 1" },
   { qid: "Q19516", name: "Lille", league: "Ligue 1" },
-  { qid: "Q19509", name: "Nice", league: "Ligue 1" },
-  { qid: "Q19505", name: "Stade Rennais", league: "Ligue 1" },
-  { qid: "Q19521", name: "RC Lens", league: "Ligue 1" }
+  { qid: "Q185163", name: "Nice", league: "Ligue 1" },
+  { qid: "Q19509", name: "Stade Rennais", league: "Ligue 1" },
+  { qid: "Q191843", name: "RC Lens", league: "Ligue 1" },
+  { qid: "Q218372", name: "Brest", league: "Ligue 1" },
+  { qid: "Q208228", name: "Stade de Reims", league: "Ligue 1" },
+  { qid: "Q19518", name: "Toulouse", league: "Ligue 1" },
+  { qid: "Q19513", name: "Montpellier", league: "Ligue 1" },
+  { qid: "Q126334", name: "Strasbourg", league: "Ligue 1" },
+  { qid: "Q192071", name: "Nantes", league: "Ligue 1" },
+  { qid: "Q328658", name: "Le Havre", league: "Ligue 1" },
+  { qid: "Q182876", name: "Auxerre", league: "Ligue 1" },
+  { qid: "Q845137", name: "Angers", league: "Ligue 1" },
+  { qid: "Q19521", name: "Saint-Étienne", league: "Ligue 1" }
 ];
 
 const CLUB_NAME_PT: Record<string, string> = {
@@ -370,7 +414,7 @@ WHERE {
           p:P54 ?activeStmt .
   ?activeStmt ps:P54 ?currentClub ;
               pq:P580 ?activeStart .
-  FILTER(YEAR(?activeStart) >= 2018)
+  FILTER(YEAR(?activeStart) >= 2008)
   FILTER NOT EXISTS { ?activeStmt pq:P582 ?endDate }
 
   # Garante que o jogador não se transferiu para outro clube posteriormente
@@ -386,8 +430,8 @@ WHERE {
   ?player wdt:P569 ?birthDate ;
           wdt:P18 ?image ;
           wikibase:sitelinks ?sitelinks .
-  FILTER(?sitelinks >= 22)
-  FILTER(YEAR(?birthDate) >= 1986 && YEAR(?birthDate) <= 2009)
+  FILTER(?sitelinks >= 10)
+  FILTER(YEAR(?birthDate) >= 1985 && YEAR(?birthDate) <= 2009)
 
   OPTIONAL { ?player wdt:P1532 ?sportCountry }
   OPTIONAL { ?player wdt:P27 ?citCountry }
@@ -413,11 +457,11 @@ WHERE {
     }
   }
 
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "pt,en,es". }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en,pt,es". }
 }
 GROUP BY ?player ?playerLabel ?fullName ?birthDate ?countryLabel ?currentClubName ?leagueName ?image ?sitelinks
 ORDER BY DESC(?sitelinks)
-LIMIT 220
+LIMIT 500
 `;
 
   const url = new URL("https://query.wikidata.org/sparql");
