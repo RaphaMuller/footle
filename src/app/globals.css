@@ -150,45 +150,6 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-.badge-silver {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(203, 213, 225, 0.4);
-  color: #e2e8f0;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.tile-glass-correct {
-  background: linear-gradient(to bottom, rgba(52, 211, 153, 0.3), rgba(5, 150, 105, 0.2), rgba(6, 78, 59, 0.6));
-  border: 1px solid rgba(110, 231, 183, 0.6);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.45), 0 8px 24px rgba(5, 150, 105, 0.25);
-}
-
-.tile-glass-correct:hover {
-  border-color: rgba(167, 243, 208, 0.8);
-}
-
-.tile-glass-partial {
-  background: linear-gradient(to bottom, rgba(251, 191, 36, 0.3), rgba(217, 119, 6, 0.2), rgba(120, 53, 15, 0.6));
-  border: 1px solid rgba(252, 211, 77, 0.6);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.45), 0 8px 24px rgba(217, 119, 6, 0.25);
-}
-
-.tile-glass-partial:hover {
-  border-color: rgba(253, 230, 138, 0.8);
-}
-
-.tile-glass-neutral {
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(30, 41, 59, 0.3), rgba(2, 6, 23, 0.6));
-  border: 1px solid rgba(203, 213, 225, 0.35);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 8px 24px rgba(0, 0, 0, 0.45);
-}
-
-.tile-glass-neutral:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
 /* ==========================================================
    CAMPO DE FUTEBOL EM CSS PURO (BACKGROUND)
    ========================================================== */

@@ -1,7 +1,8 @@
-import playersData from "@/data/players.json";
 import { Player, GuessEvaluation, CategoryFeedback } from "./schemas";
-
-const players: Player[] = playersData as Player[];
+import { supabase, mapDbRowToPlayer, DbPlayerRow } from "./supabase/client";
+import { getClubLogo, isBigFiveClub } from "./clubs";
+import { getCountryInfo } from "./countries";
+import { getLeagueLogo } from "./leagues";
 
 /**
  * Retorna a data no formato YYYY-MM-DD
@@ -12,50 +13,124 @@ export function getTodayDateString(): string {
 }
 
 /**
- * Retorna o jogador do dia a partir de um hash determinístico da data.
- * Zero banco de dados, custo zero, mesmo jogador para todos os usuários no mesmo dia.
+ * Retorna o jogador do dia para um determinado modo de jogo via Supabase.
+ * 1. Procura primeiro na tabela 'daily_challenges' para o dia e modo.
+ * 2. Se não existir registro no calendário diário, calcula determinístico pelo hash da data.
  */
-export function getDailyPlayer(dateStr: string = getTodayDateString()): Player {
+export async function getDailyPlayer(
+  dateStr: string = getTodayDateString(),
+  mode: string = "big-five"
+): Promise<Player> {
+  if (!supabase) {
+    throw new Error("Supabase não configurado no servidor.");
+  }
+
+  // 1. Tenta buscar da tabela oficial de partidas diárias
+  try {
+    const { data: challenge } = await supabase
+      .from("daily_challenges")
+      .select("player_id, players (*)")
+      .eq("match_date", dateStr)
+      .eq("game_mode_slug", mode)
+      .maybeSingle<{ player_id: number; players: DbPlayerRow }>();
+
+    if (challenge?.players) {
+      return mapDbRowToPlayer(challenge.players);
+    }
+  } catch (err) {
+    console.warn("Aviso ao buscar daily_challenges:", err);
+  }
+
+  // 2. Fallback determinístico consultando os IDs disponíveis no modo
+  const { data: modePlayers, error } = await supabase
+    .from("players")
+    .select("id")
+    .contains("game_modes", [mode])
+    .order("id", { ascending: true });
+
+  if (error || !modePlayers || modePlayers.length === 0) {
+    throw new Error(error?.message || `Nenhum jogador encontrado para o modo '${mode}'.`);
+  }
+
+  // Hash determinístico da data + modo
+  const seed = `${dateStr}-${mode}`;
   let hash = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i);
     hash |= 0;
   }
-  const index = Math.abs(hash) % players.length;
-  return players[index];
+
+  const selectedIndex = Math.abs(hash) % modePlayers.length;
+  const targetId = modePlayers[selectedIndex].id;
+
+  const targetPlayer = await getPlayerById(targetId);
+  if (!targetPlayer) {
+    throw new Error(`Jogador ID ${targetId} não pôde ser carregado do banco.`);
+  }
+
+  return targetPlayer;
 }
 
 /**
- * Busca jogadores para o autocomplete do input
+ * Busca jogadores para o autocomplete do input via Supabase com filtro por modo de jogo
  */
-export function searchPlayers(query: string, limit: number = 8) {
-  const clean = query.trim().toLowerCase();
+export async function searchPlayers(
+  query: string,
+  limit: number = 8,
+  mode: string = "big-five"
+) {
+  const clean = query.trim();
   if (!clean) return [];
 
-  return players
-    .filter(
-      (p) =>
-        p.knownName.toLowerCase().includes(clean) ||
-        p.name.toLowerCase().includes(clean) ||
-        p.currentClub.toLowerCase().includes(clean)
-    )
-    .slice(0, limit)
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      knownName: p.knownName,
-      currentClub: p.currentClub,
-      primaryPosition: p.primaryPosition,
-      nationality: p.nationality,
-      photoUrl: p.photoUrl
-    }));
+  if (!supabase) {
+    throw new Error("Supabase não configurado no servidor.");
+  }
+
+  const queryBuilder = supabase
+    .from("players")
+    .select("id, name, known_name, current_club, primary_position, nationality, photo_url")
+    .or(`known_name.ilike.%${clean}%,name.ilike.%${clean}%,current_club.ilike.%${clean}%`);
+
+  if (mode && mode !== "all") {
+    queryBuilder.contains("game_modes", [mode]);
+  }
+
+  const { data, error } = await queryBuilder.limit(limit);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data || []).map((r) => ({
+    id: Number(r.id),
+    name: r.name,
+    knownName: r.known_name,
+    currentClub: r.current_club,
+    primaryPosition: r.primary_position as Player["primaryPosition"],
+    nationality: r.nationality,
+    photoUrl: r.photo_url
+  }));
 }
 
 /**
- * Encontra jogador por ID
+ * Encontra jogador por ID exclusivamente via Supabase
  */
-export function getPlayerById(id: number): Player | undefined {
-  return players.find((p) => p.id === id);
+export async function getPlayerById(id: number): Promise<Player | undefined> {
+  if (!supabase) {
+    throw new Error("Supabase não configurado no servidor.");
+  }
+
+  const { data, error } = await supabase
+    .from("players")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle<DbPlayerRow>();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ? mapDbRowToPlayer(data) : undefined;
 }
 
 /**
@@ -68,44 +143,107 @@ export function evaluateGuess(
 ): GuessEvaluation {
   const isVictory = guessed.id === target.id;
 
-  // 1. Nacionalidade
+  // 1. Nacionalidade (Bandeira + Sigla FIFA de 3 letras)
+  const countryInfo = getCountryInfo(guessed.nationality);
+
   let nationalityFeedback: CategoryFeedback;
   if (guessed.nationality.toLowerCase() === target.nationality.toLowerCase()) {
-    nationalityFeedback = { value: guessed.nationality, status: "CORRECT" };
+    nationalityFeedback = {
+      value: guessed.nationality,
+      code: countryInfo.code3,
+      flagUrl: countryInfo.flagUrl,
+      status: "CORRECT"
+    };
   } else if (guessed.continent === target.continent) {
     nationalityFeedback = {
       value: guessed.nationality,
-      status: "PARTIAL",
-      hint: `Mesmo continente (${guessed.continent})`
+      code: countryInfo.code3,
+      flagUrl: countryInfo.flagUrl,
+      status: "PARTIAL"
     };
   } else {
-    nationalityFeedback = { value: guessed.nationality, status: "INCORRECT" };
+    nationalityFeedback = {
+      value: guessed.nationality,
+      code: countryInfo.code3,
+      flagUrl: countryInfo.flagUrl,
+      status: "INCORRECT"
+    };
   }
 
-  // 2. Clube Atual (com dica parcial para histórico de clubes em comum)
-  const commonClubs = guessed.pastClubs.filter((club) =>
-    target.pastClubs.some((targetClub) => targetClub.toLowerCase() === club.toLowerCase())
+  // 2. Clubes (Somente 1ª divisão das 5 grandes ligas, máximo 5 escudos)
+  // O clube atual é sempre garantido e exibido
+  const bigFivePastClubs = (guessed.pastClubs || []).filter(
+    (club) => isBigFiveClub(club) && club.toLowerCase() !== guessed.currentClub.toLowerCase()
   );
 
+  const displayClubs = Array.from(
+    new Set([guessed.currentClub, ...bigFivePastClubs])
+  ).slice(0, 5);
+
+  const clubIcons = displayClubs.map((club) => getClubLogo(club));
+
+  const allTargetClubs = Array.from(
+    new Set([...(target.pastClubs || []), target.currentClub].filter(Boolean))
+  );
+
+  const hasExactCurrentClub =
+    guessed.currentClub.toLowerCase() === target.currentClub.toLowerCase();
+
+  const clubItems = displayClubs.map((club) => {
+    const isExact = club.toLowerCase() === target.currentClub.toLowerCase();
+    const isMatch = allTargetClubs.some(
+      (tClub) => tClub.toLowerCase() === club.toLowerCase()
+    );
+    return {
+      name: club,
+      url: getClubLogo(club),
+      isMatch,
+      isExact
+    };
+  });
+
+  const hasRelatedClub = clubItems.some((item) => item.isMatch || item.isExact);
+
   let currentClubFeedback: CategoryFeedback;
-  if (guessed.currentClub.toLowerCase() === target.currentClub.toLowerCase()) {
-    currentClubFeedback = { value: guessed.currentClub, status: "CORRECT" };
-  } else if (commonClubs.length > 0) {
+  if (hasExactCurrentClub) {
     currentClubFeedback = {
-      value: guessed.currentClub,
-      status: "PARTIAL",
-      hint: `Ex-clube em comum: ${commonClubs.join(", ")}`
+      value: displayClubs,
+      icons: clubIcons,
+      clubItems,
+      status: "CORRECT"
+    };
+  } else if (hasRelatedClub) {
+    currentClubFeedback = {
+      value: displayClubs,
+      icons: clubIcons,
+      clubItems,
+      status: "PARTIAL"
     };
   } else {
-    currentClubFeedback = { value: guessed.currentClub, status: "INCORRECT" };
+    currentClubFeedback = {
+      value: displayClubs,
+      icons: clubIcons,
+      clubItems,
+      status: "INCORRECT"
+    };
   }
 
-  // 3. Liga
+  // 3. Liga (Logo oficial transparente + Nome da Liga)
+  const leagueLogoUrl = getLeagueLogo(guessed.league);
+
   let leagueFeedback: CategoryFeedback;
   if (guessed.league.toLowerCase() === target.league.toLowerCase()) {
-    leagueFeedback = { value: guessed.league, status: "CORRECT" };
+    leagueFeedback = {
+      value: guessed.league,
+      leagueLogoUrl,
+      status: "CORRECT"
+    };
   } else {
-    leagueFeedback = { value: guessed.league, status: "INCORRECT" };
+    leagueFeedback = {
+      value: guessed.league,
+      leagueLogoUrl,
+      status: "INCORRECT"
+    };
   }
 
   // 4. Posição
@@ -127,8 +265,7 @@ export function evaluateGuess(
   ) {
     positionFeedback = {
       value: guessed.primaryPosition,
-      status: "PARTIAL",
-      hint: "Setores adjacentes"
+      status: "PARTIAL"
     };
   } else {
     positionFeedback = { value: guessed.primaryPosition, status: "INCORRECT" };
@@ -161,8 +298,7 @@ export function evaluateGuess(
   } else if (diffGoals <= 25) {
     careerGoalsFeedback = {
       value: guessed.careerGoals,
-      status: "PARTIAL",
-      hint: `Muito próximo! (${guessed.careerGoals < target.careerGoals ? "⬆ Mais gols" : "⬇ Menos gols"})`
+      status: "PARTIAL"
     };
   } else if (guessed.careerGoals < target.careerGoals) {
     careerGoalsFeedback = {

@@ -20,16 +20,28 @@ export interface CardPlayerProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const PLAYER_PHOTO_SIZES: Record<CardPlayerSize, string> = {
-  sm: "w-12 h-12 sm:w-14 sm:h-14",
-  md: "w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24",
-  lg: "w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28"
+  sm: "w-14 h-14 sm:w-16 sm:h-16",
+  md: "w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32",
+  lg: "w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36"
 };
 
 const PLAYER_NAME_SIZES: Record<CardPlayerSize, string> = {
   sm: "text-xs font-semibold",
-  md: "text-xs sm:text-sm lg:text-base font-bold",
-  lg: "text-sm sm:text-base lg:text-lg font-bold"
+  md: "text-sm sm:text-base lg:text-lg font-black",
+  lg: "text-base sm:text-lg lg:text-xl font-black"
 };
+
+/**
+ * Otimiza a URL da foto do Wikimedia Commons solicitando thumbnail bicúbico de 400px
+ * em vez de baixar a imagem bruta de múltiplos megabytes sem suavização.
+ */
+function getOptimizedPhotoUrl(url: string): string {
+  if (!url) return url;
+  if (url.includes("Special:FilePath") && !url.includes("width=")) {
+    return `${url}${url.includes("?") ? "&" : "?"}width=400`;
+  }
+  return url;
+}
 
 /**
  * @description Sub-componente CardPlayer: Apresentação modular do atleta.
@@ -48,6 +60,7 @@ export function CardPlayer({
 }: CardPlayerProps) {
   const photoSizeClass = PLAYER_PHOTO_SIZES[size];
   const nameSizeClass = PLAYER_NAME_SIZES[size];
+  const optimizedPhotoUrl = getOptimizedPhotoUrl(photoUrl);
 
   const getHeaderStyle = () => {
     if (colorScheme === "dark") return "text-slate-800 border-slate-700/40";
@@ -86,12 +99,22 @@ export function CardPlayer({
         </span>
       )}
 
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={photoUrl}
-        alt={name}
-        className={`${photoSizeClass} rounded-full object-cover object-top ${getPhotoStyle()} shrink-0`}
-      />
+      <div
+        className={`${photoSizeClass} rounded-full ${getPhotoStyle()} shrink-0 overflow-hidden flex items-center justify-center`}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={optimizedPhotoUrl}
+          alt={name}
+          className="w-full h-full object-cover object-top"
+          style={{
+            imageRendering: "auto",
+            transform: "translateZ(0)",
+            backfaceVisibility: "hidden"
+          }}
+          loading="eager"
+        />
+      </div>
 
       <div className="flex flex-col items-center w-full min-w-0">
         <h3

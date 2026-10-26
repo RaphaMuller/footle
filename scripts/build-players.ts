@@ -1,6 +1,9 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import { createClient } from "@supabase/supabase-js";
 import { PlayersDatabaseSchema, type Player } from "../src/lib/schemas.ts";
+import { mapPlayerToDbRow, type DbPlayerRow } from "../src/lib/supabase/client.ts";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
  * Mapeamento oficial dos clubes das 5 Grandes Ligas na Wikidata
@@ -592,6 +595,8 @@ async function main() {
       careerGoals: totalGoals,
       pastClubs,
       photoUrl,
+      isIcon: false,
+      gameModes: ["big-five", "all"],
       updatedAt: today
     };
 
@@ -601,10 +606,33 @@ async function main() {
   const playersList = Array.from(deduplicated.values());
   const validated = PlayersDatabaseSchema.parse(playersList);
 
-  const outputPath = path.resolve(process.cwd(), "src/data/players.json");
-  await fs.writeFile(outputPath, JSON.stringify(validated, null, 2) + "\n", "utf-8");
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("ERRO: NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY precisam estar configurados.");
+    process.exit(1);
+  }
 
-  console.log(`Sucesso! ${validated.length} jogadores validados e gravados em src/data/players.json`);
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false }
+  });
+
+  console.log(`Enviando ${validated.length} atletas validados diretamente para o Supabase...`);
+
+  const rows: DbPlayerRow[] = validated.map(mapPlayerToDbRow);
+  const BATCH_SIZE = 100;
+
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    const batch = rows.slice(i, i + BATCH_SIZE);
+    const { error } = await supabase
+      .from("players")
+      .upsert(batch, { onConflict: "id" });
+
+    if (error) {
+      console.error(`Erro ao inserir lote ${Math.floor(i / BATCH_SIZE) + 1}:`, error.message);
+      process.exit(1);
+    }
+  }
+
+  console.log(`Sucesso! Todos os ${validated.length} jogadores foram sincronizados diretamente no Supabase.`);
 }
 
 main().catch((err) => {

@@ -14,8 +14,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { playerId, date, guessNumber = 1 } = parsed.data;
-    const guessedPlayer = getPlayerById(playerId);
+    const { playerId, date, guessNumber = 1, mode = "big-five" } = parsed.data;
+
+    const targetDate = date || getTodayDateString();
+    const [guessedPlayer, targetPlayer] = await Promise.all([
+      getPlayerById(playerId),
+      getDailyPlayer(targetDate, mode)
+    ]);
 
     if (!guessedPlayer) {
       return NextResponse.json(
@@ -23,9 +28,6 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-
-    const targetDate = date || getTodayDateString();
-    const targetPlayer = getDailyPlayer(targetDate);
 
     // Avalia o palpite contra o jogador secreto
     const evaluation = evaluateGuess(guessedPlayer, targetPlayer, guessNumber);
@@ -40,11 +42,15 @@ export async function POST(req: NextRequest) {
 
     // Se errou e ainda tem tentativas, NÃO envia o segredo
     return NextResponse.json({ evaluation });
-  } catch (error) {
-    console.error("Erro ao processar palpite:", error);
+  } catch (error: unknown) {
+    console.error("Erro ao processar palpite no Supabase:", error);
     return NextResponse.json(
-      { error: "Erro interno no servidor" },
-      { status: 500 }
+      {
+        error: "Banco de dados indisponível",
+        message: error instanceof Error ? error.message : "Erro desconhecido",
+        redirect: "/offline"
+      },
+      { status: 503 }
     );
   }
 }

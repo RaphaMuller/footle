@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { GuessEvaluation, Player } from "@/lib/schemas";
 
 export const MAX_ATTEMPTS = 10;
 
-function getStorageKey(): string {
+function getStorageKey(mode: string = "big-five"): string {
   if (typeof window === "undefined") return "";
   const today = new Date().toISOString().split("T")[0];
-  return `footle_game_v3_${today}`;
+  return `footle_game_v4_${mode}_${today}`;
 }
 
-export function useGame() {
+export function useGame(mode: string = "big-five") {
+  const router = useRouter();
   const [guesses, setGuesses] = useState<GuessEvaluation[]>([]);
   const [isWon, setIsWon] = useState(false);
   const [secretPlayer, setSecretPlayer] = useState<Player | null>(null);
@@ -20,11 +22,12 @@ export function useGame() {
   useEffect(() => {
     try {
       const today = new Date().toISOString().split("T")[0];
-      // Invalida caches legados (v1 e v2) com contrato antigo de categorias
+      // Invalida caches legados (v1, v2 e v3)
       localStorage.removeItem(`footle_game_${today}`);
       localStorage.removeItem(`footle_game_v2_${today}`);
+      localStorage.removeItem(`footle_game_v3_${today}`);
 
-      const key = getStorageKey();
+      const key = getStorageKey(mode);
       if (!key) return;
       const saved = localStorage.getItem(key);
       if (saved) {
@@ -39,7 +42,7 @@ export function useGame() {
     } catch (e) {
       console.warn("Erro ao ler localStorage:", e);
     }
-  }, []);
+  }, [mode]);
 
   const isGameOver = !isWon && guesses.length >= MAX_ATTEMPTS;
 
@@ -56,12 +59,22 @@ export function useGame() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             playerId,
-            guessNumber: nextGuessNumber
+            guessNumber: nextGuessNumber,
+            mode
           })
         });
 
+        if (res.status === 503) {
+          router.push("/offline");
+          return;
+        }
+
         if (!res.ok) {
           const err = await res.json();
+          if (err.redirect === "/offline") {
+            router.push("/offline");
+            return;
+          }
           alert(err.error || "Erro ao validar o palpite.");
           return;
         }
@@ -81,7 +94,7 @@ export function useGame() {
           setSecretPlayer(target);
         }
 
-        const key = getStorageKey();
+        const key = getStorageKey(mode);
         if (key) {
           localStorage.setItem(
             key,
@@ -98,7 +111,7 @@ export function useGame() {
         setIsLoading(false);
       }
     },
-    [isWon, isGameOver, guesses, isLoading, secretPlayer]
+    [isWon, isGameOver, guesses, isLoading, secretPlayer, mode, router]
   );
 
   const resetGame = useCallback(() => {
@@ -107,13 +120,14 @@ export function useGame() {
       localStorage.removeItem(`footle_game_${today}`);
       localStorage.removeItem(`footle_game_v2_${today}`);
       localStorage.removeItem(`footle_game_v3_${today}`);
+      localStorage.removeItem(getStorageKey(mode));
     } catch (e) {
       console.warn("Erro ao limpar localStorage:", e);
     }
     setGuesses([]);
     setIsWon(false);
     setSecretPlayer(null);
-  }, []);
+  }, [mode]);
 
   const guessedPlayerIds = guesses.map((g) => g.guessedPlayer.id);
 

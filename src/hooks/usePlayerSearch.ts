@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export interface SearchPlayerItem {
   id: number;
@@ -15,10 +16,12 @@ export interface SearchPlayerItem {
 interface UsePlayerSearchOptions {
   debounceMs?: number;
   excludeIds?: number[];
+  mode?: string;
 }
 
 export function usePlayerSearch(options: UsePlayerSearchOptions = {}) {
-  const { debounceMs = 200, excludeIds = [] } = options;
+  const router = useRouter();
+  const { debounceMs = 200, excludeIds = [], mode = "big-five" } = options;
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchPlayerItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +38,11 @@ export function usePlayerSearch(options: UsePlayerSearchOptions = {}) {
 
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}&mode=${encodeURIComponent(mode)}`);
+        if (res.status === 503) {
+          router.push("/offline");
+          return;
+        }
         if (res.ok) {
           const data = await res.json();
           const filtered = (data.results || []).filter(
@@ -52,7 +59,7 @@ export function usePlayerSearch(options: UsePlayerSearchOptions = {}) {
     }, debounceMs);
 
     return () => clearTimeout(timer);
-  }, [query, debounceMs, excludeIds]);
+  }, [query, debounceMs, excludeIds, mode, router]);
 
   const clear = () => {
     setQuery("");

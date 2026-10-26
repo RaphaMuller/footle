@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:sync": "node scripts/build-players.ts"
+    "db:sync": "node --env-file=.env.local scripts/build-players.ts",
+    "db:sync-clubs": "npx tsx --env-file=.env.local scripts/sync-clubs.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@tailwindcss/postcss": "^4.3.3",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.61.0",

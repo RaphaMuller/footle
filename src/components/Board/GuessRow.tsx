@@ -30,7 +30,7 @@ export function GuessRow({ guess }: GuessRowProps) {
         feedback={categories.nationality}
       />
       <CardTile
-        label="Clube"
+        label="Clubes"
         icon={<Shield className="w-3.5 h-3.5 text-white/80" />}
         feedback={categories.currentClub}
       />
