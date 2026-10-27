@@ -2,6 +2,7 @@
 
 @theme {
   --background-image-gradient-primary: linear-gradient(45deg, #08203E, #557C93);
+  --background-image-gradient-landing: linear-gradient(90deg, #08203E, #557C93);
   --background-image-gradient-card: linear-gradient(45deg, #1C382E, #43695D);
   --background-image-gradient-tile: linear-gradient(45deg, #0E1C26, #2A454B, #294861);
   --font-display: var(--font-display);
@@ -144,6 +145,21 @@ body {
   border-color: rgba(255, 255, 255, 0.45);
 }
 
+
+.bg-landing-gradient {
+  background: linear-gradient(90deg, #08203E, #557C93);
+}
+
+.pitch-stripes-bg {
+  background-color: var(--pitch-bg);
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--pitch-stripe-dark) 0px,
+    var(--pitch-stripe-dark) 24px,
+    var(--pitch-stripe-light) 24px,
+    var(--pitch-stripe-light) 48px
+  );
+}
 .text-silver-gradient {
   background: linear-gradient(to bottom, #ffffff, #f1f5f9, #cbd5e1);
   -webkit-background-clip: text;

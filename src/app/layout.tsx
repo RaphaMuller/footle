@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Luckiest_Guy, Inter } from "next/font/google";
+import { Bebas_Neue, Luckiest_Guy, Inter } from "next/font/google";
 import "./globals.css";
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display"
+});
 
 const luckiestGuy = Luckiest_Guy({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-display"
+  variable: "--font-luckiest"
 });
 
 const inter = Inter({
@@ -30,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${luckiestGuy.variable} ${inter.variable}`}>
+    <html lang="pt-BR" className={`${bebasNeue.variable} ${luckiestGuy.variable} ${inter.variable}`}>
       <body className="relative min-h-screen">
         {/* Ilustração do Campo de Futebol Completo em Tela Inteira */}
         <div className="pitch-overlay" aria-hidden="true">

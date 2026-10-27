@@ -1,138 +1,47 @@
-"use client";
+import React from "react";
+import { HeroScoreboard } from "@/components/Landing/HeroScoreboard";
+import { HowItWorksSteps } from "@/components/Landing/HowItWorksSteps";
+import { AttributesGrid } from "@/components/Landing/AttributesGrid";
+import { FaqSection } from "@/components/Landing/FaqSection";
+import { LandingCta } from "@/components/Landing/LandingCta";
+import { SectionDivider } from "@/components/Landing/SectionDivider";
 
-import React, { useState, useEffect } from "react";
-import { HeaderSearch } from "@/components/Header/HeaderSearch";
-import { GameBoard } from "@/components/Board/GameBoard";
-import { Button } from "@/components/common/Button";
-import { ModalViewRules } from "@/components/modals/ModalViewRules";
-import { ModalViewStats, UserStats } from "@/components/modals/ModalViewStats";
-import { useGame } from "@/hooks/useGame";
-import { useModal } from "@/hooks/useModal";
-import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
-import { HelpCircle, BarChart2 } from "lucide-react";
-
-const DEFAULT_STATS: UserStats = {
-  played: 0,
-  won: 0,
-  lost: 0,
-  currentStreak: 0,
-  maxStreak: 0
+export const metadata = {
+  title: "Footle | Spotle de Futebol das 5 Grandes Ligas",
+  description: "Adivinhe o jogador secreto da Premier League, La Liga, Serie A, Bundesliga e Ligue 1 em até 10 tentativas.",
 };
 
-/**
- * @description Página principal com Campo de Futebol em Tela Inteira.
- * Código enxuto e dinâmico: modais desacoplados em views especializadas.
- */
-export default function Home() {
-  const {
-    guesses,
-    isWon,
-    isGameOver,
-    submitGuess,
-    guessedPlayerIds,
-  } = useGame();
-
-  const rulesModal = useModal(false);
-  const statsModal = useModal(false);
-
-  const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
-
-  // Carrega histórico do usuário
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("footle_user_stats");
-      if (saved) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setStats(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.warn("Erro ao ler estatísticas:", e);
-    }
-  }, []);
-
-  // Registra desfecho da rodada
-  useEffect(() => {
-    if (!isWon && !isGameOver) return;
-
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      const recordedKey = `footle_recorded_${today}`;
-      if (localStorage.getItem(recordedKey)) return;
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setStats((prev) => {
-        const won = isWon ? prev.won + 1 : prev.won;
-        const lost = isGameOver && !isWon ? prev.lost + 1 : prev.lost;
-        const played = prev.played + 1;
-        const currentStreak = isWon ? prev.currentStreak + 1 : 0;
-        const maxStreak = Math.max(prev.maxStreak, currentStreak);
-
-        const updated = { played, won, lost, currentStreak, maxStreak };
-        localStorage.setItem("footle_user_stats", JSON.stringify(updated));
-        localStorage.setItem(recordedKey, "true");
-        return updated;
-      });
-    } catch (e) {
-      console.warn("Erro ao atualizar estatísticas:", e);
-    }
-  }, [isWon, isGameOver]);
-
-  const handleSelectPlayer = (player: SearchPlayerItem) => {
-    submitGuess(player.id);
-  };
-
+export default function LandingPage() {
   return (
-    <div className="h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col p-[var(--pitch-margin)]">
-      {/* Topo: Em mobile, flex row direto sem absolute; em desktop, centralizado com botões à direita */}
-      <div className="w-full flex items-center justify-between sm:justify-center gap-2 pt-2 sm:pt-5 pb-2 sm:pb-3 px-1 sm:px-4 shrink-0 z-30 sm:relative">
-        <div className="flex-1 sm:flex-initial sm:w-full sm:max-w-lg min-w-0">
-          <HeaderSearch
-            onSelectPlayer={handleSelectPlayer}
-            disabled={isWon || isGameOver}
-            excludePlayerIds={guessedPlayerIds}
-          />
-        </div>
+    <div className="min-h-screen w-full relative z-20 flex flex-col text-white selection:bg-emerald-500 selection:text-black bg-landing-gradient">
+      <main className="flex-1 flex flex-col w-full">
+        {/* Seção 1: Hero Scoreboard */}
+        <HeroScoreboard />
 
-        <div className="flex items-center gap-1.5 shrink-0 sm:absolute sm:right-6 lg:right-8">
-          {/* Botão de Regras */}
-          <Button
-            variant="gradient"
-            size="icon"
-            onClick={rulesModal.open}
-            title="Regras do Jogo"
-            aria-label="Regras do Jogo"
-          >
-            <HelpCircle className="w-5 h-5 text-white" />
-          </Button>
+        {/* Divisor com ponto de luz */}
+        <SectionDivider variant="glow" />
 
-          {/* Botão de Estatísticas */}
-          <Button
-            variant="gradient"
-            size="icon"
-            onClick={statsModal.open}
-            title="Estatísticas e WinStreak"
-            aria-label="Estatísticas e WinStreak"
-          >
-            <BarChart2 className="w-5 h-5 text-white" />
-          </Button>
-        </div>
-      </div>
+        {/* Seção 2: Como Funciona (Passos 01, 02 e 03) */}
+        <HowItWorksSteps />
 
-      {/* Espaço delimitado pelo campo com o container de palpites */}
-      <main className="flex-1 w-full min-h-0 flex flex-col items-center justify-center p-2 sm:p-4">
-        <GameBoard guesses={guesses} maxAttempts={10} />
+        {/* Divisor elegante */}
+        <SectionDivider variant="gradient" />
+
+        {/* Seção 3: Os 6 Atributos do Jogo */}
+        <AttributesGrid />
+
+        {/* Divisor com ponto de luz */}
+        <SectionDivider variant="glow" />
+
+        {/* Seção 4: Perguntas Frequentes (FAQ) */}
+        <FaqSection />
+
+        {/* Divisor elegante */}
+        <SectionDivider variant="gradient" />
+
+        {/* Seção 5: CTA Final de Conversão & Rodapé */}
+        <LandingCta />
       </main>
-
-      {/* Views de Modais Isoladas com maxWidth="lg" */}
-      <ModalViewRules
-        isOpen={rulesModal.isOpen}
-        onClose={rulesModal.close}
-      />
-      <ModalViewStats
-        isOpen={statsModal.isOpen}
-        onClose={statsModal.close}
-        stats={stats}
-      />
     </div>
   );
 }
