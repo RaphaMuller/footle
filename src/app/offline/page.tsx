@@ -29,35 +29,48 @@ export default function OfflinePage() {
   };
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-3xl card-silver-glass border border-white/20 p-6 sm:p-8 flex flex-col items-center text-center gap-4 shadow-2xl backdrop-blur-2xl">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-inner">
-          <WifiOff className="w-8 h-8" />
+    <main className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-xl sm:max-w-2xl rounded-3xl card-silver-glass border border-white/20 p-6 sm:p-10 md:p-12 flex flex-col items-center text-center gap-5 sm:gap-6 shadow-2xl backdrop-blur-2xl">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-inner">
+          <WifiOff className="w-8 h-8 sm:w-10 sm:h-10" />
         </div>
 
-        <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-white tracking-wide">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium tracking-wide uppercase">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <span>Serviço Temporariamente Indisponível</span>
+        </div>
+
+        <div className="space-y-2">
+          <h1
+            style={{ fontSize: "var(--text-h1)" }}
+            className="font-display text-white tracking-wide leading-tight"
+          >
             Estádio em Manutenção
           </h1>
-          <p className="text-sm text-slate-300 mt-1 leading-relaxed">
-            Não foi possível carregar a escalação dos atletas no Supabase. O serviço pode estar temporariamente fora do ar ou sem conexão.
+          <p className="text-xs sm:text-sm md:text-base text-slate-300 max-w-lg leading-relaxed">
+            Não foi possível carregar a escalação dos atletas no nosso banco de dados. O serviço pode estar temporariamente fora do ar ou sem conexão.
           </p>
         </div>
 
         {errorMsg && (
-          <div className="w-full p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2 text-left">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-red-400" />
-            <span>{errorMsg}</span>
+          <div
+            role="alert"
+            aria-live="polite"
+            className="w-full p-3.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs sm:text-sm flex items-start gap-2.5 text-left"
+          >
+            <AlertTriangle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
+            <span className="leading-snug">{errorMsg}</span>
           </div>
         )}
 
-        <div className="w-full pt-2">
+        <div className="w-full pt-2 flex justify-center">
           <Button
             variant="gradient"
             size="lg"
             onClick={handleRetry}
             disabled={checking}
-            className="w-full flex items-center justify-center gap-2 py-3"
+            aria-busy={checking}
+            className="w-full sm:w-auto min-w-[240px] flex items-center justify-center gap-2 py-3 px-8 text-sm sm:text-base"
           >
             <RefreshCw className={`w-4 h-4 ${checking ? "animate-spin" : ""}`} />
             <span>{checking ? "Verificando Conexão..." : "Tentar Novamente"}</span>
