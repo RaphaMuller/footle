@@ -2,133 +2,143 @@
 
 import React from "react";
 import { GuessEvaluation } from "@/lib/schemas";
-import { CardRoot } from "@/components/common/CardRoot";
-import { CardPlayer } from "@/components/common/CardPlayer";
+import { PendingGuessItem } from "@/hooks/useGame";
+import { CardRoot, CardVariant } from "@/components/common/CardRoot";
+import { CardPlayer, CardPlayerSize } from "@/components/common/CardPlayer";
 import { CardTile } from "@/components/common/CardTile";
 import { Globe, Shield, Trophy, Footprints, Calendar, Flame } from "lucide-react";
 
 export interface GuessRowProps {
-  /** Objeto de avaliação do palpite atual */
-  guess: GuessEvaluation;
+  /** Avaliação resolvida do palpite */
+  guess?: GuessEvaluation;
+  /** Palpite otimista enquanto aguarda retorno do banco de dados */
+  pendingGuess?: PendingGuessItem;
+  /** Destaca visualmente como tentativa atual no topo do tabuleiro */
+  isLatest?: boolean;
+  /** Dispara a revelação sequencial 1 -> 6 dos atributos */
+  shouldReveal?: boolean;
+  /** Superfície visual do card (padrão: "play") */
+  variant?: CardVariant;
+  /** Escala da foto e nome do atleta (padrão: "md") */
+  playerSize?: CardPlayerSize;
 }
 
 /**
- * @description Card do palpite com headers e separadores conectados em cruz:
- * - Fundo com gradiente linear (#8399A2 para #EEF2F3)
- * - Linhas pretas/slate (border-slate-700/60)
- * - Zero sombras no card e container
- * - Conexão unificada do header do jogador com o header de informações
+ * @description Card do palpite com atleta ampliado (sem card preto interno e sem número) + 6 cartas de atributos.
  */
-export function GuessRow({ guess }: GuessRowProps) {
-  const { guessedPlayer, categories } = guess;
+export function GuessRow({
+  guess,
+  pendingGuess,
+  isLatest = false,
+  shouldReveal = false,
+  variant = "play",
+  playerSize = "md"
+}: GuessRowProps) {
+  const isPending = Boolean(pendingGuess && !guess);
+  const athlete = guess?.guessedPlayer ?? pendingGuess?.guessedPlayer;
+  const categories = guess?.categories;
+
+  if (!athlete) return null;
+
+  const activeHighlightClass = guess?.isVictory
+    ? "card-play-victory"
+    : isLatest
+      ? "card-play-active"
+      : "";
 
   const renderTiles = () => (
     <>
       <CardTile
         label="Nacionalidade"
-        icon={<Globe className="w-3.5 h-3.5 text-white/80" />}
-        feedback={categories.nationality}
+        icon={<Globe className="w-3.5 h-3.5" />}
+        feedback={categories?.nationality}
+        isPending={isPending}
+        revealIndex={0}
+        shouldReveal={shouldReveal}
       />
       <CardTile
         label="Clubes"
-        icon={<Shield className="w-3.5 h-3.5 text-white/80" />}
-        feedback={categories.currentClub}
+        icon={<Shield className="w-3.5 h-3.5" />}
+        feedback={categories?.currentClub}
+        isPending={isPending}
+        revealIndex={1}
+        shouldReveal={shouldReveal}
       />
       <CardTile
         label="Liga"
-        icon={<Trophy className="w-3.5 h-3.5 text-white/80" />}
-        feedback={categories.league}
+        icon={<Trophy className="w-3.5 h-3.5" />}
+        feedback={categories?.league}
+        isPending={isPending}
+        revealIndex={2}
+        shouldReveal={shouldReveal}
       />
       <CardTile
         label="Posição"
-        icon={<Footprints className="w-3.5 h-3.5 text-white/80" />}
-        feedback={categories.position}
+        icon={<Footprints className="w-3.5 h-3.5" />}
+        feedback={categories?.position}
+        isPending={isPending}
+        revealIndex={3}
+        shouldReveal={shouldReveal}
       />
       <CardTile
         label="Idade"
-        icon={<Calendar className="w-3.5 h-3.5 text-white/80" />}
-        feedback={categories.age}
+        icon={<Calendar className="w-3.5 h-3.5" />}
+        feedback={categories?.age}
+        isPending={isPending}
+        revealIndex={4}
+        shouldReveal={shouldReveal}
       />
       <CardTile
         label="Gols"
-        icon={<Flame className="w-3.5 h-3.5 text-white/80" />}
-        feedback={categories.careerGoals}
+        icon={<Flame className="w-3.5 h-3.5" />}
+        feedback={categories?.careerGoals}
+        isPending={isPending}
+        revealIndex={5}
+        shouldReveal={shouldReveal}
       />
     </>
   );
 
   return (
     <CardRoot
-      variant="apple-glass"
-      className="w-full h-full flex flex-col transition-all duration-300 animate-fadeIn min-h-0 overflow-hidden"
+      variant={variant}
+      className={`w-full flex flex-col overflow-hidden ${activeHighlightClass}`}
     >
-      {/* =========================================================
-          DESKTOP (md+): Barra de headers unificada com divisores em cruz
-          ========================================================= */}
-      <div className="hidden md:flex flex-col w-full">
-        {/* Barra de Cabeçalhos Conectada */}
-        <div className="flex items-center w-full bg-white/[0.03]">
-          <div className="w-[30%] py-2 text-center text-xs uppercase font-bold tracking-widest text-white/40">
-            Jogador
-          </div>
-          <div className="w-px self-stretch bg-white/10 shrink-0" aria-hidden="true" />
-          <div className="flex-1 py-2 text-center text-xs uppercase font-bold tracking-widest text-white/40">
-            Informações do Jogador
-          </div>
+      {/* DESKTOP (md+): Atleta ampliado direto sobre o card | Grid 3x2 à direita */}
+      <div className="hidden md:flex items-center w-full p-4 gap-4">
+        <div className="w-[28%] flex items-center justify-center shrink-0">
+          <CardPlayer
+            photoUrl={athlete.photoUrl}
+            name={athlete.knownName}
+            size={playerSize}
+            colorScheme="apple"
+          />
         </div>
 
-        {/* Linha horizontal contínua unificando os blocos */}
-        <div className="w-full h-px bg-white/10" aria-hidden="true" />
-
-        {/* Corpo do Palpite (Atleta 30% | Grid 70%) */}
-        <div className="flex items-stretch w-full min-h-0">
-          <div className="w-[30%] p-3.5 flex items-center justify-center min-h-0 shrink-0">
-            <CardPlayer
-              photoUrl={guessedPlayer.photoUrl}
-              name={guessedPlayer.knownName}
-              size="md"
-              colorScheme="apple"
-            />
-          </div>
-
-          {/* Divisor vertical conectado diretamente à barra de header */}
-          <div className="w-px self-stretch bg-white/10 shrink-0" aria-hidden="true" />
-
-          <div className="flex-1 p-3.5 flex items-center justify-center min-h-0">
-            <div className="grid grid-cols-3 grid-rows-2 gap-2.5 w-full h-full">
-              {renderTiles()}
-            </div>
-          </div>
+        <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-2.5 min-w-0">
+          {renderTiles()}
         </div>
       </div>
 
-      {/* =========================================================
-          MOBILE (< md): Conexão vertical em 100% da altura do bloco
-          ========================================================= */}
-      <div className="md:hidden flex flex-col w-full h-full justify-between">
-        <div className="flex flex-col w-full shrink-0">
-          <div className="py-1.5 text-center text-[10px] uppercase font-bold tracking-widest text-white/40 border-b border-white/10 bg-white/[0.03]">
-            Jogador
-          </div>
-          <div className="py-2.5 px-2 flex items-center justify-center">
-            <CardPlayer
-              photoUrl={guessedPlayer.photoUrl}
-              name={guessedPlayer.knownName}
-              size="md"
-              colorScheme="apple"
+      {/* MOBILE (< md): Atleta ampliado sem caixa preta + Grid 2x3 */}
+      <div className="md:hidden flex flex-col w-full p-3 gap-3">
+        <div className="flex items-center justify-center gap-3.5 py-1">
+          <div className="w-16 h-16 rounded-full overflow-hidden player-avatar-ring shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={athlete.photoUrl}
+              alt={athlete.knownName}
+              className="w-full h-full object-cover object-top img-gpu-crisp"
+              loading="eager"
             />
           </div>
+          <span className="text-base sm:text-lg font-extrabold text-stadium-ink leading-tight">
+            {athlete.knownName}
+          </span>
         </div>
 
-        <div className="w-full h-px bg-white/10 shrink-0" aria-hidden="true" />
-
-        <div className="flex flex-col w-full flex-1 justify-between pb-1.5 min-h-0">
-          <div className="py-1.5 text-center text-[10px] uppercase font-bold tracking-widest text-white/40 border-b border-white/10 bg-white/[0.03] shrink-0">
-            Informações do Jogador
-          </div>
-          <div className="p-2 flex-1 grid grid-cols-2 grid-rows-3 gap-2 w-full min-h-0">
-            {renderTiles()}
-          </div>
+        <div className="grid grid-cols-2 grid-rows-3 gap-2 w-full">
+          {renderTiles()}
         </div>
       </div>
     </CardRoot>

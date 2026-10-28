@@ -1,10 +1,21 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { GuessEvaluation, Player } from "@/lib/schemas";
+import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
 
 export const MAX_ATTEMPTS = 10;
+
+export interface PendingGuessItem {
+  guessNumber: number;
+  guessedPlayer: {
+    id: number;
+    name: string;
+    knownName: string;
+    photoUrl: string;
+  };
+}
 
 function getStorageKey(mode: string = "big-five"): string {
   if (typeof window === "undefined") return "";
@@ -15,14 +26,27 @@ function getStorageKey(mode: string = "big-five"): string {
 export function useGame(mode: string = "big-five") {
   const router = useRouter();
   const [guesses, setGuesses] = useState<GuessEvaluation[]>([]);
+  const [pendingGuess, setPendingGuess] = useState<PendingGuessItem | null>(null);
+  const [activeRevealGuessNumber, setActiveRevealGuessNumber] = useState<number | null>(null);
   const [isWon, setIsWon] = useState(false);
   const [secretPlayer, setSecretPlayer] = useState<Player | null>(null);
+  const [isResultReady, setIsResultReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) {
+        clearTimeout(revealTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     try {
       const today = new Date().toISOString().split("T")[0];
-      // Invalida caches legados (v1, v2 e v3)
       localStorage.removeItem(`footle_game_${today}`);
       localStorage.removeItem(`footle_game_v2_${today}`);
       localStorage.removeItem(`footle_game_v3_${today}`);
@@ -32,11 +56,18 @@ export function useGame(mode: string = "big-five") {
       const saved = localStorage.getItem(key);
       if (saved) {
         const parsed = JSON.parse(saved);
+        const savedGuesses: GuessEvaluation[] = parsed.guesses || [];
+        const savedWon = Boolean(parsed.isWon);
+        const savedGameOver = !savedWon && savedGuesses.length >= MAX_ATTEMPTS;
+
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setGuesses(parsed.guesses || []);
-        setIsWon(parsed.isWon || false);
+        setGuesses(savedGuesses);
+        setIsWon(savedWon);
         if (parsed.secretPlayer) {
           setSecretPlayer(parsed.secretPlayer);
+        }
+        if (savedWon || savedGameOver) {
+          setIsResultReady(true);
         }
       }
     } catch (e) {
@@ -47,11 +78,35 @@ export function useGame(mode: string = "big-five") {
   const isGameOver = !isWon && guesses.length >= MAX_ATTEMPTS;
 
   const submitGuess = useCallback(
-    async (playerId: number) => {
-      if (isWon || isGameOver || guesses.length >= MAX_ATTEMPTS || isLoading) return;
+    async (selected: SearchPlayerItem | number) => {
+      if (
+        isWon ||
+        isGameOver ||
+        guesses.length >= MAX_ATTEMPTS ||
+        isLoading ||
+        pendingGuess !== null
+      ) {
+        return;
+      }
 
-      setIsLoading(true);
+      const playerId = typeof selected === "number" ? selected : selected.id;
       const nextGuessNumber = guesses.length + 1;
+
+      setErrorMsg(null);
+      setIsLoading(true);
+
+      // Monta o card otimista em 0ms usando os dados já carregados na busca
+      if (typeof selected !== "number") {
+        setPendingGuess({
+          guessNumber: nextGuessNumber,
+          guessedPlayer: {
+            id: selected.id,
+            name: selected.name,
+            knownName: selected.knownName,
+            photoUrl: selected.photoUrl
+          }
+        });
+      }
 
       try {
         const res = await fetch("/api/guess", {
@@ -65,23 +120,28 @@ export function useGame(mode: string = "big-five") {
         });
 
         if (res.status === 503) {
+          setPendingGuess(null);
           router.push("/offline");
           return;
         }
 
         if (!res.ok) {
           const err = await res.json();
+          setPendingGuess(null);
           if (err.redirect === "/offline") {
             router.push("/offline");
             return;
           }
-          alert(err.error || "Erro ao validar o palpite.");
+          setErrorMsg(err.error || "Não foi possível validar o palpite.");
           return;
         }
 
         const data = await res.json();
         const evaluation: GuessEvaluation = data.evaluation;
         const updatedGuesses = [evaluation, ...guesses];
+
+        setPendingGuess(null);
+        setActiveRevealGuessNumber(evaluation.guessNumber);
         setGuesses(updatedGuesses);
 
         let wonNow = false;
@@ -92,6 +152,16 @@ export function useGame(mode: string = "big-five") {
           target = data.secretPlayer;
           if (wonNow) setIsWon(true);
           setSecretPlayer(target);
+        }
+
+        const finishedNow = wonNow || updatedGuesses.length >= MAX_ATTEMPTS;
+        if (finishedNow) {
+          if (revealTimerRef.current) {
+            clearTimeout(revealTimerRef.current);
+          }
+          revealTimerRef.current = setTimeout(() => {
+            setIsResultReady(true);
+          }, 1450);
         }
 
         const key = getStorageKey(mode);
@@ -107,14 +177,19 @@ export function useGame(mode: string = "big-five") {
         }
       } catch (err) {
         console.error("Erro na requisição do palpite:", err);
+        setPendingGuess(null);
+        setErrorMsg("Falha de conexão ao registrar seu chute. Tente novamente.");
       } finally {
         setIsLoading(false);
       }
     },
-    [isWon, isGameOver, guesses, isLoading, secretPlayer, mode, router]
+    [isWon, isGameOver, guesses, isLoading, pendingGuess, secretPlayer, mode, router]
   );
 
   const resetGame = useCallback(() => {
+    if (revealTimerRef.current) {
+      clearTimeout(revealTimerRef.current);
+    }
     try {
       const today = new Date().toISOString().split("T")[0];
       localStorage.removeItem(`footle_game_${today}`);
@@ -125,22 +200,42 @@ export function useGame(mode: string = "big-five") {
       console.warn("Erro ao limpar localStorage:", e);
     }
     setGuesses([]);
+    setPendingGuess(null);
+    setActiveRevealGuessNumber(null);
     setIsWon(false);
     setSecretPlayer(null);
+    setIsResultReady(false);
+    setErrorMsg(null);
   }, [mode]);
 
+  const clearError = useCallback(() => setErrorMsg(null), []);
+
   const guessedPlayerIds = guesses.map((g) => g.guessedPlayer.id);
+  if (pendingGuess) {
+    guessedPlayerIds.push(pendingGuess.guessedPlayer.id);
+  }
+
+  const usedChances = Math.min(
+    MAX_ATTEMPTS,
+    guesses.length + (pendingGuess ? 1 : 0)
+  );
 
   return {
     guesses,
+    pendingGuess,
+    activeRevealGuessNumber,
     isWon,
     isGameOver,
+    isResultReady,
     secretPlayer,
     isLoading,
+    errorMsg,
+    clearError,
     submitGuess,
     resetGame,
     guessedPlayerIds,
     maxAttempts: MAX_ATTEMPTS,
-    attemptsLeft: Math.max(0, MAX_ATTEMPTS - guesses.length)
+    usedChances,
+    attemptsLeft: Math.max(0, MAX_ATTEMPTS - usedChances)
   };
 }
