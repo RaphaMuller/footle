@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, Luckiest_Guy, Inter } from "next/font/google";
+import { Bebas_Neue, Luckiest_Guy, Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -20,14 +20,20 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"]
 });
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-landing",
+  weight: ["400", "500", "600", "700", "800"]
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1
 };
 
 export const metadata: Metadata = {
-  title: "Footle | Spotle de Jogadores",
-  description: "Adivinhe o jogador de futebol do dia das 5 grandes ligas."
+  title: "Footle | Desafio Diário das 5 Grandes Ligas",
+  description: "Adivinhe o jogador de futebol secreto do dia das 5 grandes ligas europeias em até 10 chutes."
 };
 
 export default function RootLayout({
@@ -36,24 +42,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${bebasNeue.variable} ${luckiestGuy.variable} ${inter.variable}`}>
-      <body className="relative min-h-screen">
-        {/* Ilustração do Campo de Futebol Completo em Tela Inteira */}
-        <div className="pitch-overlay" aria-hidden="true">
-          {/* Áreas dos Gols (Esquerda e Direita) */}
-          <div className="pitch-goal pitch-goal-left" />
-          <div className="pitch-goal pitch-goal-right" />
-
-          {/* Arcos de Escanteio (4 cantos) */}
-          <div className="pitch-corner pitch-corner-tl" />
-          <div className="pitch-corner pitch-corner-tr" />
-          <div className="pitch-corner pitch-corner-bl" />
-          <div className="pitch-corner pitch-corner-br" />
-        </div>
-
-        {/* Conteúdo da Aplicação acima do campo */}
-        <div className="relative z-10">{children}</div>
-      </body>
+    <html
+      lang="pt-BR"
+      className={`${bebasNeue.variable} ${luckiestGuy.variable} ${inter.variable} ${plusJakartaSans.variable}`}
+    >
+      <body className="relative min-h-dvh">{children}</body>
     </html>
   );
 }

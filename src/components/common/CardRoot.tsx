@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export type CardVariant = "glass" | "gradient" | "subtle" | "outline" | "slate-gradient" | "apple-glass";
+export type CardVariant = "matte" | "play" | "subtle" | "apple-glass";
 
 export interface CardRootProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Estilo visual da superfície do card */
@@ -12,22 +12,17 @@ export interface CardRootProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const VARIANT_CLASSES: Record<CardVariant, string> = {
-  glass: "card-silver-glass border border-white/15 shadow-xl backdrop-blur-xl",
-  gradient: "bg-gradient-primary border border-white/20 shadow-lg text-white",
-  subtle: "bg-white/[0.04] border border-white/10 text-white backdrop-blur-md",
-  outline: "border border-white/20 bg-transparent text-white",
-  "slate-gradient": "bg-gradient-card border border-slate-700/60 text-slate-900 shadow-none",
-  "apple-glass": "card-apple-glass text-white"
+  matte: "card-stadium-matte text-stadium-ink",
+  play: "card-play-surface text-stadium-ink",
+  subtle: "surface-stadium-inset text-stadium-ink",
+  "apple-glass": "card-play-surface text-stadium-ink"
 };
 
 /**
- * @description Componente Base CardRoot (Container primitivo).
- * Mantém limite rígido de responsabilidade única e menos de 150 linhas.
- * 
- * @param {CardRootProps} props - Propriedades do container.
+ * @description Componente Base CardRoot (Container primitivo unificado em Petróleo & Gramado).
  */
 export function CardRoot({
-  variant = "glass",
+  variant = "play",
   children,
   className = "",
   ...props
@@ -36,7 +31,7 @@ export function CardRoot({
 
   return (
     <div
-      className={`rounded-2xl transition-all duration-300 ${variantClass} ${className}`}
+      className={`rounded-2xl transition-colors duration-200 ${variantClass} ${className}`}
       {...props}
     >
       {children}

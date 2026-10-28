@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/common/Button";
+import { PitchOverlay } from "@/components/common/PitchOverlay";
 
 export default function OfflinePage() {
   const router = useRouter();
@@ -29,7 +30,9 @@ export default function OfflinePage() {
   };
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8">
+    <>
+      <PitchOverlay />
+      <main className="relative z-10 min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-xl sm:max-w-2xl rounded-3xl card-silver-glass border border-white/20 p-6 sm:p-10 md:p-12 flex flex-col items-center text-center gap-5 sm:gap-6 shadow-2xl backdrop-blur-2xl">
         <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-inner">
           <WifiOff className="w-8 h-8 sm:w-10 sm:h-10" />
@@ -41,10 +44,7 @@ export default function OfflinePage() {
         </div>
 
         <div className="space-y-2">
-          <h1
-            style={{ fontSize: "var(--text-h1)" }}
-            className="font-display text-white tracking-wide leading-tight"
-          >
+          <h1 className="font-display text-responsive-h1 text-white tracking-wide leading-tight">
             Estádio em Manutenção
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-slate-300 max-w-lg leading-relaxed">
@@ -76,7 +76,8 @@ export default function OfflinePage() {
             <span>{checking ? "Verificando Conexão..." : "Tentar Novamente"}</span>
           </Button>
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }
