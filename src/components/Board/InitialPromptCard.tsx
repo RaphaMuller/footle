@@ -1,44 +1,104 @@
 "use client";
 
 import React from "react";
-import { Trophy, HelpCircle } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { SoccerBallIcon } from "@/components/Landing/SoccerBallIcon";
+import { Globe, Shield, Trophy, Footprints, Calendar, Flame } from "lucide-react";
 
-/**
- * Contrato de propriedades do componente InitialPromptCard.
- */
 export interface InitialPromptCardProps {
   /** Quantidade máxima de tentativas permitidas na partida (padrão: 10) */
   maxAttempts?: number;
 }
 
+const GHOST_TILES = [
+  { label: "Nacionalidade", icon: Globe },
+  { label: "Clubes", icon: Shield },
+  { label: "Liga", icon: Trophy },
+  { label: "Posição", icon: Footprints },
+  { label: "Idade", icon: Calendar },
+  { label: "Gols", icon: Flame }
+];
+
+const QUINT_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 /**
- * @description Exibe a mensagem e instruções iniciais de boas-vindas do jogo ("O Campo Está Pronto!").
- * Renderizado no centro da área de jogo quando ainda não existem palpites registrados.
- * 
- * @param {InitialPromptCardProps} props - Propriedades do card informativo inicial.
+ * @description Slot Tático de Encaixe na geometria exata do GuessRow, aguardando o 1º palpite deslizar.
  */
 export function InitialPromptCard({ maxAttempts = 10 }: InitialPromptCardProps) {
+  const reduceMotion = useReducedMotion();
+
+  const renderGhostGrid = () => (
+    <>
+      {GHOST_TILES.map((tile) => {
+        const Icon = tile.icon;
+        return (
+          <div
+            key={tile.label}
+            className="w-full min-h-[80px] sm:min-h-[88px] rounded-xl play-ghost-tile p-2 flex flex-col justify-between items-center"
+          >
+            <div className="flex items-center gap-1.5 text-center text-[11px] sm:text-xs font-bold text-stadium-subtle w-full justify-center">
+              <Icon className="w-3.5 h-3.5 opacity-70 shrink-0" aria-hidden="true" />
+              <span className="truncate">{tile.label}</span>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center w-full py-1">
+              <span className="w-6 h-1 rounded-full bg-white/10" aria-hidden="true" />
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
+
   return (
-    <div className="w-full h-full flex items-center justify-center p-4 animate-fadeIn">
-      <div className="w-full max-w-xl p-6 sm:p-8 rounded-3xl card-silver-glass border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col items-center text-center gap-4">
-        <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-inner backdrop-blur-md">
-          <Trophy className="w-7 h-7 text-amber-400" />
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: QUINT_OUT }}
+      className="w-full rounded-2xl play-ghost-slot overflow-hidden"
+    >
+      {/* DESKTOP (md+): Mesma silhueta 28% | 72% do GuessRow */}
+      <div className="hidden md:flex items-center w-full p-4 gap-4">
+        <div className="w-[28%] flex flex-col items-center justify-center text-center gap-2.5 p-2 shrink-0">
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-full play-ghost-avatar flex items-center justify-center text-stadium-accent">
+            <SoccerBallIcon className="w-9 h-9 opacity-80" />
+          </div>
+
+          <div className="flex flex-col items-center">
+            <h2 className="text-base md:text-lg font-extrabold text-stadium-ink tracking-tight leading-snug">
+              1º chute livre
+            </h2>
+            <p className="text-xs text-stadium-muted mt-0.5 max-w-[190px] leading-relaxed">
+              Busque acima para revelar as 6 cartas ({maxAttempts} chances).
+            </p>
+          </div>
         </div>
 
-        <h2 className="font-display text-xl sm:text-2xl tracking-wide text-silver-gradient font-bold leading-tight">
-          O Campo Está Pronto!
-        </h2>
-
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md">
-          Pesquise seu primeiro palpite na barra de busca acima. Você tem até{" "}
-          <strong className="text-white">{maxAttempts} tentativas</strong> para decifrar o craque do dia das 5 grandes ligas europeias.
-        </p>
-
-        <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-200 bg-slate-900/60 px-3.5 py-2 rounded-xl border border-white/15 mt-1 backdrop-blur-md">
-          <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>Dicas comparativas de nacionalidade, clube, liga, posição, idade e gols a cada chute.</span>
+        <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-2.5 min-w-0">
+          {renderGhostGrid()}
         </div>
       </div>
-    </div>
+
+      {/* MOBILE (< md): Silhueta compacta alinhada ao GuessRow mobile */}
+      <div className="md:hidden flex flex-col w-full p-3 gap-3">
+        <div className="flex items-center gap-3.5 px-1 py-1">
+          <div className="w-14 h-14 rounded-full play-ghost-avatar flex items-center justify-center text-stadium-accent shrink-0">
+            <SoccerBallIcon className="w-6 h-6 opacity-80" />
+          </div>
+          <div className="flex flex-col text-left min-w-0">
+            <h2 className="text-base font-extrabold text-stadium-ink leading-tight">
+              1º chute livre
+            </h2>
+            <p className="text-xs text-stadium-muted mt-0.5 leading-snug">
+              Busque um jogador acima ({maxAttempts} chances no dia).
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 grid-rows-3 gap-2 w-full">
+          {renderGhostGrid()}
+        </div>
+      </div>
+    </motion.div>
   );
 }

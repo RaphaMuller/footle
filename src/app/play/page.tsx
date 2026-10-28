@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { HeaderSearch } from "@/components/Header/HeaderSearch";
+import { PlayHud } from "@/components/Header/PlayHud";
 import { GameBoard } from "@/components/Board/GameBoard";
-import { Button } from "@/components/common/Button";
+import { PlayArenaBackdrop } from "@/components/Board/PlayArenaBackdrop";
 import { ModalViewRules } from "@/components/modals/ModalViewRules";
 import { ModalViewStats, UserStats } from "@/components/modals/ModalViewStats";
 import { useGame } from "@/hooks/useGame";
 import { useModal } from "@/hooks/useModal";
 import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
-import { HelpCircle, BarChart2, ArrowLeft } from "lucide-react";
+import { AlertTriangle, X } from "lucide-react";
 
 const DEFAULT_STATS: UserStats = {
   played: 0,
@@ -21,15 +20,23 @@ const DEFAULT_STATS: UserStats = {
 };
 
 /**
- * @description Página do jogo diário com Campo de Futebol em Tela Inteira.
+ * @description Página do jogo diário (/play) em Arena Noturna limpa (sem linhas cruzando os cards).
  */
 export default function PlayPage() {
   const {
     guesses,
+    pendingGuess,
+    activeRevealGuessNumber,
     isWon,
     isGameOver,
+    isResultReady,
+    secretPlayer,
+    errorMsg,
+    clearError,
     submitGuess,
     guessedPlayerIds,
+    maxAttempts,
+    attemptsLeft
   } = useGame();
 
   const rulesModal = useModal(false);
@@ -37,7 +44,6 @@ export default function PlayPage() {
 
   const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
 
-  // Carrega histórico do usuário
   useEffect(() => {
     try {
       const saved = localStorage.getItem("footle_user_stats");
@@ -50,7 +56,6 @@ export default function PlayPage() {
     }
   }, []);
 
-  // Registra desfecho da rodada
   useEffect(() => {
     if (!isWon && !isGameOver) return;
 
@@ -78,83 +83,68 @@ export default function PlayPage() {
   }, [isWon, isGameOver]);
 
   const handleSelectPlayer = (player: SearchPlayerItem) => {
-    submitGuess(player.id);
+    submitGuess(player);
   };
 
   return (
-    <div className="h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col p-[var(--pitch-margin)]">
-      {/* Topo */}
-      <div className="w-full flex items-center justify-between sm:justify-center gap-2 pt-2 sm:pt-5 pb-2 sm:pb-3 px-1 sm:px-4 shrink-0 z-30 sm:relative">
-        <div className="hidden sm:flex items-center sm:absolute sm:left-6 lg:left-8">
-          <Link href="/" aria-label="Voltar para início">
-            <Button
-              variant="card"
-              size="sm"
-              className="gap-2 px-3 text-slate-300 hover:text-white"
+    <>
+      <PlayArenaBackdrop />
+      <div className="relative z-10 h-dvh max-h-dvh w-full overflow-hidden flex flex-col px-3 sm:px-6 pt-2 sm:pt-4 pb-2 landing-root">
+        <PlayHud
+          onSelectPlayer={handleSelectPlayer}
+          disabled={isWon || isGameOver || pendingGuess !== null}
+          excludePlayerIds={guessedPlayerIds}
+          attemptsLeft={attemptsLeft}
+          maxAttempts={maxAttempts}
+          isWon={isWon}
+          onOpenRules={rulesModal.open}
+          onOpenStats={statsModal.open}
+        />
+
+        {errorMsg && (
+          <div
+            role="alert"
+            className="w-full max-w-4xl lg:max-w-5xl mx-auto mb-2 px-4 py-2.5 rounded-xl tile-status-partial flex items-center justify-between gap-3 shrink-0 z-20 text-xs sm:text-sm"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <AlertTriangle className="w-4 h-4 text-amber-300 shrink-0" />
+              <span className="truncate font-medium">{errorMsg}</span>
+            </div>
+            <button
+              type="button"
+              onClick={clearError}
+              aria-label="Fechar aviso"
+              className="text-white/80 hover:text-white cursor-pointer shrink-0"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="font-medium text-xs">Início</span>
-            </Button>
-          </Link>
-        </div>
-
-        <div className="flex-1 sm:flex-initial sm:w-full sm:max-w-lg min-w-0">
-          <HeaderSearch
-            onSelectPlayer={handleSelectPlayer}
-            disabled={isWon || isGameOver}
-            excludePlayerIds={guessedPlayerIds}
-          />
-        </div>
-
-        <div className="flex items-center gap-1.5 shrink-0 sm:absolute sm:right-6 lg:right-8">
-          <div className="sm:hidden">
-            <Link href="/" aria-label="Voltar para início">
-              <Button
-                variant="card"
-                size="icon"
-                title="Página Inicial"
-                aria-label="Página Inicial"
-              >
-                <ArrowLeft className="w-4 h-4 text-slate-300" />
-              </Button>
-            </Link>
+              <X className="w-4 h-4" />
+            </button>
           </div>
+        )}
 
-          <Button
-            variant="gradient"
-            size="icon"
-            onClick={rulesModal.open}
-            title="Regras do Jogo"
-            aria-label="Regras do Jogo"
-          >
-            <HelpCircle className="w-5 h-5 text-white" />
-          </Button>
+        <main className="flex-1 w-full min-h-0 flex flex-col items-center pb-1">
+          <GameBoard
+            guesses={guesses}
+            pendingGuess={pendingGuess}
+            activeRevealGuessNumber={activeRevealGuessNumber}
+            isWon={isWon}
+            isGameOver={isGameOver}
+            isResultReady={isResultReady}
+            secretPlayer={secretPlayer}
+            maxAttempts={maxAttempts}
+            onOpenStats={statsModal.open}
+          />
+        </main>
 
-          <Button
-            variant="gradient"
-            size="icon"
-            onClick={statsModal.open}
-            title="Estatísticas e Sequência"
-            aria-label="Estatísticas e Sequência"
-          >
-            <BarChart2 className="w-5 h-5 text-white" />
-          </Button>
-        </div>
+        <ModalViewRules
+          isOpen={rulesModal.isOpen}
+          onClose={rulesModal.close}
+        />
+        <ModalViewStats
+          isOpen={statsModal.isOpen}
+          onClose={statsModal.close}
+          stats={stats}
+        />
       </div>
-
-      <main className="flex-1 w-full min-h-0 flex flex-col items-center justify-center p-2 sm:p-4">
-        <GameBoard guesses={guesses} maxAttempts={10} />
-      </main>
-
-      <ModalViewRules
-        isOpen={rulesModal.isOpen}
-        onClose={rulesModal.close}
-      />
-      <ModalViewStats
-        isOpen={statsModal.isOpen}
-        onClose={statsModal.close}
-        stats={stats}
-      />
-    </div>
+    </>
   );
 }

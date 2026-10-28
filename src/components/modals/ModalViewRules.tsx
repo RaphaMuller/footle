@@ -2,29 +2,35 @@
 
 import React from "react";
 import { Modal } from "@/components/common/Modal";
-import { HelpCircle, CheckCircle2, AlertTriangle, ArrowUpDown, Globe, Shield, Trophy, Activity, Calendar, Target } from "lucide-react";
+import {
+  HelpCircle,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowUpDown,
+  Globe,
+  Shield,
+  Trophy,
+  Footprints,
+  Calendar,
+  Flame
+} from "lucide-react";
 
 export interface ModalViewRulesProps {
-  /** Determina se o modal está aberto */
   isOpen: boolean;
-  /** Callback para fechar o modal */
   onClose: () => void;
 }
 
 const ATTRIBUTES = [
   { label: "Nacionalidade", icon: Globe },
-  { label: "Clube Atual", icon: Shield },
+  { label: "Clubes", icon: Shield },
   { label: "Liga", icon: Trophy },
-  { label: "Posição", icon: Activity },
+  { label: "Posição", icon: Footprints },
   { label: "Idade", icon: Calendar },
-  { label: "Gols", icon: Target },
+  { label: "Gols", icon: Flame }
 ];
 
 /**
- * @description View de Regras do Jogo instanciada na página principal.
- * Apresenta chips dos atributos e feedbacks cromáticos com hierarquia limpa, sem redundância de botões.
- * 
- * @param {ModalViewRulesProps} props - Propriedades da view.
+ * @description Modal de Regras alinhado aos blocos vibrantes do tabuleiro.
  */
 export function ModalViewRules({ isOpen, onClose }: ModalViewRulesProps) {
   return (
@@ -32,15 +38,14 @@ export function ModalViewRules({ isOpen, onClose }: ModalViewRulesProps) {
       isOpen={isOpen}
       onClose={onClose}
       title="Regras do Footle"
-      subtitle="Adivinhe o craque do dia das 5 grandes ligas em até 10 palpites"
+      subtitle="Adivinhe o craque do dia das 5 grandes ligas em até 10 chances"
       maxWidth="lg"
-      icon={<HelpCircle className="w-5 h-5 text-emerald-400" />}
+      icon={<HelpCircle className="w-5 h-5 text-stadium-accent" />}
     >
       <div className="flex flex-col gap-4 pt-1">
-        {/* Atributos Avaliados em Chips */}
         <div className="flex flex-col gap-2">
-          <span className="text-[11px] sm:text-xs uppercase tracking-wider text-slate-400 font-semibold">
-            6 Atributos avaliados a cada palpite:
+          <span className="text-xs font-bold text-stadium-muted">
+            Os 6 atributos avaliados a cada chute:
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {ATTRIBUTES.map((attr) => {
@@ -48,53 +53,49 @@ export function ModalViewRules({ isOpen, onClose }: ModalViewRulesProps) {
               return (
                 <div
                   key={attr.label}
-                  className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-xs"
+                  className="flex items-center gap-2 p-2.5 rounded-xl surface-stadium-inset text-stadium-ink text-xs"
                 >
-                  <Icon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="font-medium truncate">{attr.label}</span>
+                  <Icon className="w-3.5 h-3.5 text-stadium-accent shrink-0" />
+                  <span className="font-semibold truncate">{attr.label}</span>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Feedback Cards */}
         <div className="flex flex-col gap-2.5">
-          {/* Feedback Correto */}
-          <div className="flex items-start gap-3 p-3 sm:p-3.5 rounded-2xl bg-emerald-950/20 border border-emerald-500/30">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-3.5 rounded-2xl tile-status-correct">
+            <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0 mt-0.5" />
             <div className="flex flex-col">
-              <strong className="text-emerald-300 text-xs sm:text-sm font-semibold">
-                Verde (Correto)
+              <strong className="text-white text-xs sm:text-sm font-bold">
+                Verde (Acerto exato)
               </strong>
-              <p className="text-slate-300 text-xs sm:text-sm mt-0.5 leading-relaxed">
-                Mesmo país, mesmo clube atual, mesma liga ou mesma posição exata.
+              <p className="text-emerald-50/90 text-xs sm:text-sm mt-0.5 leading-relaxed">
+                Mesmo país, mesmo clube atual, mesma liga, mesma posição, idade ou gols cravados.
               </p>
             </div>
           </div>
 
-          {/* Feedback Parcial */}
-          <div className="flex items-start gap-3 p-3 sm:p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30">
-            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-3.5 rounded-2xl tile-status-partial">
+            <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
             <div className="flex flex-col">
-              <strong className="text-amber-300 text-xs sm:text-sm font-semibold">
-                Âmbar (Parcial)
+              <strong className="text-white text-xs sm:text-sm font-bold">
+                Âmbar (Parcial ou ex-clube)
               </strong>
-              <p className="text-slate-300 text-xs sm:text-sm mt-0.5 leading-relaxed">
-                Mesmo continente, ex-clube em comum no histórico ou margem de até ±25 gols.
+              <p className="text-amber-50/90 text-xs sm:text-sm mt-0.5 leading-relaxed">
+                Mesmo continente, escudo aceso em ex-clube em comum ou margem de até ±25 gols.
               </p>
             </div>
           </div>
 
-          {/* Feedback Incorreto / Setas */}
-          <div className="flex items-start gap-3 p-3 sm:p-3.5 rounded-2xl bg-white/5 border border-white/10">
-            <ArrowUpDown className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-3.5 rounded-2xl tile-status-neutral">
+            <ArrowUpDown className="w-5 h-5 text-stadium-muted shrink-0 mt-0.5" />
             <div className="flex flex-col">
-              <strong className="text-slate-200 text-xs sm:text-sm font-semibold">
-                Cinza / Setas (Incorreto ou Direcional)
+              <strong className="text-stadium-ink text-xs sm:text-sm font-bold">
+                Neutro / Setas (Direcional)
               </strong>
-              <p className="text-slate-300 text-xs sm:text-sm mt-0.5 leading-relaxed">
-                Sem vínculo direto. Para Idade e Gols, as setas indicam se o jogador secreto é mais velho/novo (⬆/⬇) ou tem mais/menos gols (⬆/⬇).
+              <p className="text-stadium-muted text-xs sm:text-sm mt-0.5 leading-relaxed">
+                Sem vínculo direto. Em Idade e Gols, as setas apontam se o craque secreto tem um número maior (↑) ou menor (↓).
               </p>
             </div>
           </div>
