@@ -2,56 +2,42 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/common/Button";
-import { Section } from "@/components/Landing/Section";
-import { SectionContainer } from "@/components/Landing/SectionContainer";
-import { Play, Activity } from "lucide-react";
+import { Play } from "lucide-react";
+
+const QUINT_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 /**
- * @description Seção de fechamento com CTA de conversão e créditos técnicos.
+ * @description Bloco de conversão estruturado antes do rodapé.
  */
 export function LandingCta() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <Section variant="default" size="md" className="py-12 sm:py-20">
-      <SectionContainer size="sm" centered padded className="flex flex-col items-center text-center">
-        
-        {/* Botão de Grande Formato */}
-        <Link href="/play" className="w-full sm:w-auto">
-          <Button
-            variant="gradient"
-            size="lg"
-            className="w-full sm:w-auto min-w-[280px] sm:min-w-[360px] gap-3 py-4 sm:py-5 px-10 text-base sm:text-lg font-bold shadow-2xl shadow-emerald-950/80 hover:scale-[1.02] transition-transform"
-          >
-            <Play className="w-5 h-5 fill-white shrink-0" />
-            <span>JOGAR O DESAFIO DE HOJE</span>
-          </Button>
-        </Link>
+    <motion.section
+      aria-label="Entrar na partida de hoje"
+      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.44, ease: QUINT_OUT }}
+      className="w-full card-stadium-matte rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left"
+    >
+      <div className="flex flex-col">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-stadium-ink tracking-tight">
+          Pronto para entrar em campo hoje?
+        </h2>
+        <p className="text-xs sm:text-sm text-stadium-muted mt-1">
+          Grátis, sem cadastro e com um novo craque secreto a cada meia-noite.
+        </p>
+      </div>
 
-        {/* Microtexto Inspirado no Spotle */}
-        <span className="text-[11px] sm:text-xs font-semibold text-slate-400 tracking-[0.28em] uppercase mt-4">
-          FOOTLE • UM NOVO JOGADOR A CADA 24 HORAS
-        </span>
-
-        {/* Rodapé Técnico Sutil */}
-        <div className="w-full max-w-xl border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-          <span>© 2026 Footle. Projeto aberto.</span>
-          
-          <div className="flex items-center gap-4">
-            <a
-              href="/api/health"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              <Activity className="w-3.5 h-3.5" />
-              <span>Status do Banco</span>
-            </a>
-            <span className="text-white/20">•</span>
-            <span>Dados FotMob & Wikidata</span>
-          </div>
-        </div>
-
-      </SectionContainer>
-    </Section>
+      <Link href="/play" className="inline-block shrink-0">
+        <Button variant="emerald-pill" size="lg" className="px-8">
+          <Play className="w-4 h-4 fill-current shrink-0" />
+          <span>Jogar o desafio de hoje</span>
+        </Button>
+      </Link>
+    </motion.section>
   );
 }

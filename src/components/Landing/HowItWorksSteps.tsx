@@ -1,227 +1,160 @@
 "use client";
 
 import React from "react";
-import { Section } from "@/components/Landing/Section";
-import { SectionContainer } from "@/components/Landing/SectionContainer";
-import { SectionHeader } from "@/components/Landing/SectionHeader";
-import { Search, CheckCircle2, ArrowUp, HelpCircle } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { GuessRow } from "@/components/Board/GuessRow";
+import {
+  COLE_PALMER_PLAYER,
+  PALMER_DEMO_GUESS,
+  HAALAND_DEMO_GUESS
+} from "@/components/Landing/landingExamples";
+import { Search } from "lucide-react";
 
-export interface StepBadge {
-  label: string;
-  variant: "correct" | "partial" | "neutral";
-}
+const QUINT_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 /**
- * @description Seção com a jornada em 3 passos numerados inspirada no Spotle oficial.
+ * @description Fluxo editorial de 3 passos com entrada em scroll usando os componentes reais do jogo (Cole Palmer -> Erling Haaland).
  */
 export function HowItWorksSteps() {
+  const reduceMotion = useReducedMotion();
+
+  const revealProps = (delay = 0) => ({
+    initial: reduceMotion ? false : ({ opacity: 0, y: 20 } as const),
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.46, delay, ease: QUINT_OUT }
+  });
+
   return (
-    <Section variant="default" size="lg" className="py-12 sm:py-20">
-      <SectionContainer size="lg" centered padded className="flex flex-col gap-8 sm:gap-10">
-        
-        {/* Cabeçalho da Seção */}
-        <SectionHeader
-          badge="COMO FUNCIONA"
-          icon={<HelpCircle className="w-3.5 h-3.5 text-emerald-400" />}
-          title="PASSO A PASSO DO JOGO"
-          subtitle="Sem chutes às cegas. Entenda como o sistema de comparação guia seus palpites até o craque misterioso."
-          align="center"
-        />
+    <section
+      id="como-funciona"
+      aria-labelledby="como-funciona-heading"
+      className="w-full flex flex-col gap-4 scroll-mt-10"
+    >
+      <motion.div {...revealProps(0)} className="flex flex-col mb-1">
+        <h2
+          id="como-funciona-heading"
+          className="text-2xl sm:text-3xl font-extrabold text-stadium-ink tracking-tight"
+        >
+          Como funciona a rodada
+        </h2>
+        <p className="text-sm sm:text-base text-stadium-muted mt-1.5 max-w-xl leading-relaxed">
+          Três movimentos diretos separam o primeiro chute da revelação do craque secreto.
+        </p>
+      </motion.div>
 
-        {/* Lista de 3 Passos Verticais */}
-        <div className="flex flex-col gap-6 sm:gap-8 w-full max-w-4xl mx-auto">
+      {/* PASSO 01 */}
+      <motion.div
+        {...revealProps(0.04)}
+        className="card-stadium-matte rounded-2xl p-4 sm:p-5 flex items-start gap-4"
+      >
+        <span
+          aria-hidden="true"
+          className="font-display text-3xl sm:text-4xl text-stadium-accent leading-none pt-0.5 shrink-0"
+        >
+          01
+        </span>
 
-          {/* PASSO 01: Digite qualquer atleta */}
-          <div className="card-silver-glass rounded-3xl p-6 sm:p-8 border border-white/15 shadow-xl flex flex-col gap-4">
-            <div className="flex items-start gap-4 sm:gap-5">
-              <span className="font-display text-4xl sm:text-5xl text-amber-400 leading-none shrink-0">
-                01
-              </span>
-              <div className="flex flex-col min-w-0">
-                <h3 className="font-display text-2xl sm:text-3xl text-white tracking-wide leading-tight">
-                  DIGITE QUALQUER ATLETA
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
-                  Pesquise entre 1.717 jogadores das 5 grandes ligas e selecione um nome da lista suspensa. Os 6 atributos serão comparados instantaneamente.
-                </p>
-              </div>
+        <div className="flex-1 min-w-0 flex flex-col">
+          <h3 className="text-base sm:text-lg font-bold text-stadium-ink leading-snug">
+            Digite qualquer atleta
+          </h3>
+          <p className="text-xs sm:text-sm text-stadium-muted mt-1 leading-relaxed">
+            Busque jogadores atuando nas 5 grandes ligas europeias e selecione um nome na lista suspensa. As seis pistas aparecem na hora.
+          </p>
+
+          {/* Simulação fiel da busca com atleta real */}
+          <div className="mt-3.5 surface-stadium-inset rounded-xl px-3.5 py-2.5 flex items-center gap-3">
+            <Search className="w-4 h-4 text-stadium-subtle shrink-0" aria-hidden="true" />
+            <div className="w-7 h-7 rounded-full overflow-hidden surface-stadium-inset shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={COLE_PALMER_PLAYER.photoUrl}
+                alt={COLE_PALMER_PLAYER.knownName}
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+              />
             </div>
-
-            {/* Simulação do Input de Busca */}
-            <div className="w-full mt-2 p-3 sm:p-3.5 rounded-2xl bg-black/40 border border-white/15 flex items-center gap-3 text-slate-300">
-              <Search className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="font-medium text-xs sm:text-sm text-white">
-                Erling Haaland
-              </span>
-              <span className="ml-auto text-[11px] text-slate-400 uppercase tracking-wider font-semibold hidden sm:inline-block">
-                Manchester City • Atacante
-              </span>
-            </div>
+            <span className="text-xs sm:text-sm font-semibold text-stadium-ink truncate">
+              {COLE_PALMER_PLAYER.knownName}
+            </span>
+            <span className="ml-auto text-xs font-medium text-stadium-muted shrink-0">
+              Chelsea • Meia
+            </span>
           </div>
-
-          {/* PASSO 02: Leia as pistas comparativas */}
-          <div className="card-silver-glass rounded-3xl p-6 sm:p-8 border border-white/15 shadow-xl flex flex-col gap-4">
-            <div className="flex items-start gap-4 sm:gap-5">
-              <span className="font-display text-4xl sm:text-5xl text-amber-400 leading-none shrink-0">
-                02
-              </span>
-              <div className="flex flex-col min-w-0">
-                <h3 className="font-display text-2xl sm:text-3xl text-white tracking-wide leading-tight">
-                  LEIA AS PISTAS COMPARATIVAS
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
-                  A cada palpite, as cores e setas indicam sua proximidade em relação ao atleta do dia:
-                </p>
-
-                {/* Legenda das Cores */}
-                <div className="flex flex-wrap gap-2 mt-3 text-xs">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/80 text-emerald-300 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    Verde: Correto
-                  </span>
-
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/80 text-amber-300 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-amber-400" />
-                    Âmbar: Parcial / Próximo
-                  </span>
-
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-300 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-slate-400" />
-                    Cinza: Direcional (⬆/⬇)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Simulação Visual de Palpite Parcial (Rodri) */}
-            <div className="w-full mt-2 p-4 sm:p-5 rounded-2xl bg-black/40 border border-white/15 flex flex-col gap-3">
-              <div className="flex items-center justify-between border-b border-white/10 pb-2 text-xs">
-                <span className="font-display text-sm sm:text-base text-white tracking-wide">
-                  RODRI <span className="text-slate-400 text-xs font-sans font-normal">• Manchester City</span>
-                </span>
-                <span className="text-amber-400 font-semibold text-xs">
-                  Tentativa #02 • 4/6 Acertos
-                </span>
-              </div>
-
-              {/* Grid de 6 Atributos com Pistas Reais */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Nacionalidade</span>
-                  <span className="font-semibold text-white mt-0.5">Espanha 🇪🇸</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Clube Atual</span>
-                  <span className="font-semibold text-white mt-0.5">Man. City 🛡️</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Liga</span>
-                  <span className="font-semibold text-white mt-0.5">Premier 🏆</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Posição</span>
-                  <span className="font-semibold text-white mt-0.5">Meio-campo ⚽</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-white/5 border border-white/15 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-slate-400">Idade</span>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="font-semibold text-white">28 anos</span>
-                    <span className="text-amber-400 font-bold">⬇</span>
-                  </div>
-                  <span className="text-[9px] text-slate-400">Mais novo</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-white/5 border border-white/15 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-slate-400">Gols Carreira</span>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="font-semibold text-white">35 gols</span>
-                    <span className="text-cyan-400 font-bold">⬆</span>
-                  </div>
-                  <span className="text-[9px] text-slate-400">Mais gols</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* PASSO 03: Acerte o craque secreto */}
-          <div className="card-silver-glass rounded-3xl p-6 sm:p-8 border border-emerald-500/30 shadow-xl flex flex-col gap-4">
-            <div className="flex items-start gap-4 sm:gap-5">
-              <span className="font-display text-4xl sm:text-5xl text-emerald-400 leading-none shrink-0">
-                03
-              </span>
-              <div className="flex flex-col min-w-0">
-                <h3 className="font-display text-2xl sm:text-3xl text-white tracking-wide leading-tight">
-                  ACERTE O CRAQUE SECRETO E VENÇA
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
-                  Use os direcionamentos acumulados para refinar seu palpite. Você tem até 10 tentativas. Ao acertar todos os 6 atributos, a vitória é sua!
-                </p>
-              </div>
-            </div>
-
-            {/* Simulação Visual do Card 100% Verde (Haaland) */}
-            <div className="w-full mt-2 p-4 sm:p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 flex flex-col gap-3 shadow-inner">
-              <div className="flex items-center justify-between border-b border-emerald-500/30 pb-2 text-xs">
-                <span className="font-display text-sm sm:text-base text-white tracking-wide">
-                  ERLING HAALAND <span className="text-emerald-200 text-xs font-sans font-normal">• Manchester City</span>
-                </span>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/80 text-emerald-300 font-bold text-xs uppercase tracking-wide">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Vitória • 6/6 Acertos</span>
-                </div>
-              </div>
-
-              {/* Grid 100% Verde */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-emerald-500/25 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Nacionalidade</span>
-                  <span className="font-semibold text-white mt-0.5">Noruega 🇳🇴</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/25 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Clube Atual</span>
-                  <span className="font-semibold text-white mt-0.5">Man. City 🛡️</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/25 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Liga</span>
-                  <span className="font-semibold text-white mt-0.5">Premier 🏆</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/25 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Posição</span>
-                  <span className="font-semibold text-white mt-0.5">Atacante ⚽</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/25 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Idade</span>
-                  <span className="font-semibold text-white mt-0.5">24 anos</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-emerald-500/25 border border-emerald-400/80 text-center flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold text-emerald-300">Gols Carreira</span>
-                  <span className="font-semibold text-white mt-0.5">260+ gols</span>
-                  <span className="text-[9px] text-emerald-200">Exato</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
-      </SectionContainer>
-    </Section>
+      </motion.div>
+
+      {/* PASSO 02 */}
+      <motion.div
+        {...revealProps(0.06)}
+        className="card-stadium-matte rounded-2xl p-4 sm:p-5 flex items-start gap-4"
+      >
+        <span
+          aria-hidden="true"
+          className="font-display text-3xl sm:text-4xl text-stadium-accent leading-none pt-0.5 shrink-0"
+        >
+          02
+        </span>
+
+        <div className="flex-1 min-w-0 flex flex-col">
+          <h3 className="text-base sm:text-lg font-bold text-stadium-ink leading-snug">
+            Leia as pistas comparativas
+          </h3>
+          <p className="text-xs sm:text-sm text-stadium-muted mt-1 leading-relaxed">
+            Cada coluna revela quão próximo seu chute passou do jogador misterioso:
+          </p>
+
+          <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2 text-xs">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md chip-clue-correct font-semibold">
+              Verde
+            </span>
+            <span className="text-stadium-muted mr-1.5">é acerto exato,</span>
+
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md chip-clue-partial font-semibold">
+              Âmbar
+            </span>
+            <span className="text-stadium-muted mr-1.5">indica proximidade ou ex-clube,</span>
+
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md surface-stadium-inset text-stadium-ink font-semibold">
+              Neutro
+            </span>
+            <span className="text-stadium-muted">orienta com setas (↑/↓) ou descarta.</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* CARD REAL #1: Cole Palmer avaliado contra Erling Haaland */}
+      <motion.div {...revealProps(0.08)} data-ui="guess-demo-row">
+        <GuessRow guess={PALMER_DEMO_GUESS} variant="matte" />
+      </motion.div>
+
+      {/* PASSO 03 */}
+      <motion.div
+        {...revealProps(0.06)}
+        className="card-stadium-matte rounded-2xl p-4 sm:p-5 flex items-start gap-4"
+      >
+        <span
+          aria-hidden="true"
+          className="font-display text-3xl sm:text-4xl text-stadium-accent leading-none pt-0.5 shrink-0"
+        >
+          03
+        </span>
+
+        <div className="flex-1 min-w-0 flex flex-col">
+          <h3 className="text-base sm:text-lg font-bold text-stadium-ink leading-snug">
+            Crave o craque secreto e vença
+          </h3>
+          <p className="text-xs sm:text-sm text-stadium-muted mt-1 leading-relaxed">
+            Acima, a Premier League bateu em cheio, o escudo do Manchester City acendeu como clube em comum e as setas pediram um atacante mais velho e goleador. Fechando 6 de 6 em até 10 chutes, a rodada é sua!
+          </p>
+        </div>
+      </motion.div>
+
+      {/* CARD REAL #2: Erling Haaland 100% Verde */}
+      <motion.div {...revealProps(0.08)} data-ui="guess-demo-win">
+        <GuessRow guess={HAALAND_DEMO_GUESS} variant="matte" />
+      </motion.div>
+    </section>
   );
 }

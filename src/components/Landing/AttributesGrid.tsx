@@ -1,144 +1,133 @@
 "use client";
 
 import React from "react";
-import { Section } from "@/components/Landing/Section";
-import { SectionContainer } from "@/components/Landing/SectionContainer";
-import { SectionHeader } from "@/components/Landing/SectionHeader";
-import { Globe, Shield, Trophy, Activity, Calendar, Target, Layers } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { Globe, Shield, Trophy, Footprints, Calendar, Flame } from "lucide-react";
 
-export interface PlayerAttributeItem {
+export interface AttributeSummaryItem {
   id: string;
   label: string;
+  description: string;
   icon: React.ComponentType<{ className?: string }>;
-  exactMatch: string;
-  partialMatch?: string;
-  directionalMatch?: string;
 }
 
-const ATTRIBUTES: PlayerAttributeItem[] = [
+const ATTRIBUTE_ITEMS: AttributeSummaryItem[] = [
   {
-    id: "01",
+    id: "attr-nationality",
     label: "Nacionalidade",
-    icon: Globe,
-    exactMatch: "Mesmo país de nascimento ou nacionalidade esportiva.",
-    partialMatch: "Mesmo continente (ex: América do Sul, Europa)."
+    description: "Verde para o mesmo país; âmbar quando ambos defendem seleções do mesmo continente.",
+    icon: Globe
   },
   {
-    id: "02",
-    label: "Clube Atual",
-    icon: Shield,
-    exactMatch: "Mesmo clube da temporada 2026/2027.",
-    partialMatch: "Ex-clube em comum no histórico da carreira do atleta."
+    id: "attr-clubs",
+    label: "Clubes",
+    description: "Verde no time atual; anel aceso no escudo quando dividiram algum ex-clube na carreira.",
+    icon: Shield
   },
   {
-    id: "03",
-    label: "Liga Nacional",
-    icon: Trophy,
-    exactMatch: "Mesma liga nacional (Premier, La Liga, Serie A, Bundesliga ou Ligue 1)."
+    id: "attr-league",
+    label: "Liga",
+    description: "Compara a liga atual entre Premier League, La Liga, Serie A, Bundesliga e Ligue 1.",
+    icon: Trophy
   },
   {
-    id: "04",
-    label: "Posição em Campo",
-    icon: Activity,
-    exactMatch: "Mesma posição exata (Goleiro, Defensor, Meio-campista ou Atacante).",
-    partialMatch: "Posição adjacente ou setor semelhante do campo."
+    id: "attr-position",
+    label: "Posição",
+    description: "Verde na função exata em campo; âmbar para faixas táticas vizinhas.",
+    icon: Footprints
   },
   {
-    id: "05",
+    id: "attr-age",
     label: "Idade",
-    icon: Calendar,
-    exactMatch: "Idade exata em anos.",
-    directionalMatch: "Setas indicam se o jogador secreto é mais velho (⬆) ou mais novo (⬇)."
+    description: "Idade atual acompanhada de setas indicando se o alvo secreto é mais velho (↑) ou mais novo (↓).",
+    icon: Calendar
   },
   {
-    id: "06",
+    id: "attr-goals",
     label: "Gols na Carreira",
-    icon: Target,
-    exactMatch: "Total exato de gols oficiais.",
-    partialMatch: "Margem próxima de até ±25 gols de diferença.",
-    directionalMatch: "Setas indicam se o atleta tem mais gols (⬆) ou menos gols (⬇)."
+    description: "Contagem oficial na carreira: acende âmbar até ±25 gols de distância e aponta (↑/↓).",
+    icon: Flame
   }
 ];
 
+const QUINT_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 /**
- * @description Grid explicativo com os 6 atributos avaliados em cards numerados.
+ * @description Grid 3x2 editorial dos 6 atributos avaliados a cada chute com stagger em scroll.
  */
 export function AttributesGrid() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <Section variant="default" size="lg" className="py-12 sm:py-20">
-      <SectionContainer size="lg" centered padded className="flex flex-col gap-8 sm:gap-10">
-        
-        {/* Cabeçalho */}
-        <SectionHeader
-          badge="CRITÉRIOS DE AVALIAÇÃO"
-          icon={<Layers className="w-3.5 h-3.5 text-emerald-400" />}
-          title="OS 6 ATRIBUTOS DO JOGO"
-          subtitle="Cada tentativa compara simultaneamente 6 atributos oficiais de cada atleta no banco de dados."
-          align="center"
-        />
+    <section
+      id="atributos"
+      aria-labelledby="atributos-heading"
+      className="w-full flex flex-col gap-5 scroll-mt-10"
+    >
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.44, ease: QUINT_OUT }}
+        className="flex flex-col"
+      >
+        <h2
+          id="atributos-heading"
+          className="text-2xl sm:text-3xl font-extrabold text-stadium-ink tracking-tight"
+        >
+          Os 6 atributos avaliados
+        </h2>
+        <p className="text-sm sm:text-base text-stadium-muted mt-1.5 max-w-xl leading-relaxed">
+          Cada tentativa cruza instantaneamente seis dados oficiais da trajetória do atleta.
+        </p>
+      </motion.div>
 
-        {/* Grid 2x3 de Cards Numerados */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full max-w-5xl mx-auto">
-          {ATTRIBUTES.map((attr) => {
-            const Icon = attr.icon;
-            return (
-              <div
-                key={attr.id}
-                className="card-silver-glass rounded-2xl p-5 sm:p-6 border border-white/10 hover:border-white/25 flex flex-col justify-between transition-all group"
-              >
-                <div>
-                  {/* Topo do Card: Número e Ícone */}
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3.5">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <h3 className="font-display text-lg sm:text-xl text-white tracking-wide">
-                        {attr.label}
-                      </h3>
-                    </div>
-                    <span className="font-mono text-xs font-semibold text-slate-400">
-                      {attr.id}
-                    </span>
-                  </div>
-
-                  {/* Detalhes dos Critérios */}
-                  <div className="flex flex-col gap-2 text-xs">
-                    {/* Correto */}
-                    <div className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
-                      <p className="text-slate-300 leading-snug">
-                        <strong className="text-emerald-300 font-medium">Verde:</strong> {attr.exactMatch}
-                      </p>
-                    </div>
-
-                    {/* Parcial */}
-                    {attr.partialMatch && (
-                      <div className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 mt-1.5" />
-                        <p className="text-slate-300 leading-snug">
-                          <strong className="text-amber-300 font-medium">Âmbar:</strong> {attr.partialMatch}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Direcional */}
-                    {attr.directionalMatch && (
-                      <div className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0 mt-1.5" />
-                        <p className="text-slate-300 leading-snug">
-                          <strong className="text-slate-200 font-medium">Setas:</strong> {attr.directionalMatch}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+      <motion.div
+        initial={reduceMotion ? "visible" : "hidden"}
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.06
+            }
+          }
+        }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full"
+      >
+        {ATTRIBUTE_ITEMS.map((attr) => {
+          const Icon = attr.icon;
+          return (
+            <motion.article
+              key={attr.id}
+              variants={{
+                hidden: { opacity: 0, y: 18 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.42, ease: QUINT_OUT }
+                }
+              }}
+              className="card-stadium-matte rounded-2xl p-4 sm:p-5 flex flex-col gap-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm sm:text-base font-bold text-stadium-accent leading-tight">
+                  {attr.label}
+                </h3>
+                <Icon
+                  className="w-4 h-4 text-stadium-subtle shrink-0"
+                  aria-hidden="true"
+                />
               </div>
-            );
-          })}
-        </div>
 
-      </SectionContainer>
-    </Section>
+              <p className="text-xs sm:text-sm text-stadium-muted leading-relaxed">
+                {attr.description}
+              </p>
+            </motion.article>
+          );
+        })}
+      </motion.div>
+    </section>
   );
 }
