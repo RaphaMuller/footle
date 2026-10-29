@@ -3,26 +3,28 @@
 import React from "react";
 
 export type CardVariant = "matte" | "play" | "subtle" | "apple-glass";
+export type CardElementTag = "div" | "article" | "section";
 
-export interface CardRootProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Estilo visual da superfície do card */
+export interface CardRootProps extends React.HTMLAttributes<HTMLElement> {
   variant?: CardVariant;
-  /** Conteúdo dos blocos internos */
+  as?: CardElementTag;
   children: React.ReactNode;
 }
 
 const VARIANT_CLASSES: Record<CardVariant, string> = {
   matte: "card-stadium-matte text-stadium-ink",
-  play: "card-play-surface text-stadium-ink",
-  subtle: "surface-stadium-inset text-stadium-ink",
-  "apple-glass": "card-play-surface text-stadium-ink"
+  play: "card-play-surface text-ds-ink",
+  subtle: "bg-ds-inset border border-ds-border text-ds-ink",
+  "apple-glass": "card-play-surface text-ds-ink"
 };
 
 /**
- * @description Componente Base CardRoot (Container primitivo unificado em Petróleo & Gramado).
+ * @example
+ * <CardRoot as="article" variant="play"><p>Card content</p></CardRoot>
  */
 export function CardRoot({
   variant = "play",
+  as: Tag = "div",
   children,
   className = "",
   ...props
@@ -30,11 +32,11 @@ export function CardRoot({
   const variantClass = VARIANT_CLASSES[variant];
 
   return (
-    <div
+    <Tag
       className={`rounded-2xl transition-colors duration-200 ${variantClass} ${className}`}
       {...props}
     >
       {children}
-    </div>
+    </Tag>
   );
 }

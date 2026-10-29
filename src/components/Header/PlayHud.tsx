@@ -2,11 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { HeaderSearch } from "@/components/Header/HeaderSearch";
-import { Button } from "@/components/common/Button";
-import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, HelpCircle, BarChart2 } from "lucide-react";
+import { HeaderSearch } from "@/components/Header/HeaderSearch";
+import { AttemptMeter } from "@/components/Header/AttemptMeter";
+import { Button } from "@/components/common/Button";
+import type { SearchPlayerItem } from "@/hooks/usePlayerSearch";
 
 export interface PlayHudProps {
   onSelectPlayer: (player: SearchPlayerItem) => void;
@@ -19,10 +20,11 @@ export interface PlayHudProps {
   onOpenStats: () => void;
 }
 
-const GRAVITY_EASE: [number, number, number, number] = [0.32, 0, 0.67, 0];
+const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 /**
- * @description HUD Superior alinhado ao tabuleiro com todos os controles na superfície padrão "<- Início".
+ * @example
+ * <PlayHud onSelectPlayer={submit} disabled={false} excludePlayerIds={[]} attemptsLeft={10} maxAttempts={10} isWon={false} onOpenRules={openRules} onOpenStats={openStats} />
  */
 export function PlayHud({
   onSelectPlayer,
@@ -35,115 +37,71 @@ export function PlayHud({
   onOpenStats
 }: PlayHudProps) {
   const reduceMotion = useReducedMotion();
-  const slots = Array.from({ length: maxAttempts }, (_, idx) => idx);
 
-  const renderChanceOrbs = () => (
-    <div
-      role="status"
-      aria-label={`${attemptsLeft} de ${maxAttempts} chances restantes`}
-      title={`${attemptsLeft} de ${maxAttempts} chances restantes`}
-      className="play-orbs-pill rounded-xl px-2.5 h-9 sm:h-10 flex items-center gap-1 sm:gap-1.5 shrink-0"
+  const renderHudControls = () => (
+    <nav
+      aria-label="Controles da partida"
+      className="flex items-center gap-1.5 sm:gap-2 shrink-0"
     >
-      {slots.map((slotIndex) => {
-        const isLit = slotIndex < attemptsLeft;
-        const driftX = slotIndex % 2 === 0 ? 4 : -4;
-        const dropRotate = slotIndex % 2 === 0 ? 36 : -36;
+      <AttemptMeter
+        attemptsLeft={attemptsLeft}
+        maxAttempts={maxAttempts}
+        isWon={isWon}
+      />
 
-        return (
-          <div
-            key={slotIndex}
-            className="relative w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full chance-slot-empty flex items-center justify-center shrink-0"
-          >
-            <AnimatePresence initial={false}>
-              {isLit && (
-                <motion.span
-                  key={`orb-${slotIndex}`}
-                  initial={
-                    reduceMotion ? { opacity: 1 } : { scale: 0.6, opacity: 0 }
-                  }
-                  animate={
-                    isWon && !reduceMotion
-                      ? {
-                          scale: [1, 1.26, 1],
-                          opacity: 1,
-                          y: 0,
-                          transition: {
-                            duration: 0.45,
-                            delay: slotIndex * 0.04,
-                            ease: "easeOut"
-                          }
-                        }
-                      : { scale: 1, opacity: 1, y: 0, x: 0, rotate: 0 }
-                  }
-                  exit={
-                    reduceMotion
-                      ? { opacity: 0, transition: { duration: 0.14 } }
-                      : {
-                          y: [0, -3, 28],
-                          x: [0, driftX * 0.5, driftX],
-                          rotate: [0, dropRotate * 0.4, dropRotate],
-                          scale: [1, 1.08, 0.45],
-                          opacity: [1, 0.95, 0],
-                          transition: {
-                            duration: 0.58,
-                            ease: GRAVITY_EASE
-                          }
-                        }
-                  }
-                  className="absolute inset-0 rounded-full chance-orb-active pointer-events-none"
-                />
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      })}
-    </div>
+      <Button
+        variant="hud-icon"
+        size="icon"
+        onClick={onOpenRules}
+        title="Regras do Jogo"
+        aria-label="Regras do Jogo"
+      >
+        <HelpCircle className="w-4 h-4" />
+      </Button>
+
+      <Button
+        variant="hud-icon"
+        size="icon"
+        onClick={onOpenStats}
+        title="Estatísticas e Sequência"
+        aria-label="Estatísticas e Sequência"
+      >
+        <BarChart2 className="w-4 h-4" />
+      </Button>
+    </nav>
   );
 
   return (
-    <header className="w-full max-w-4xl lg:max-w-5xl mx-auto pt-1 sm:pt-3 pb-2 shrink-0 z-30">
-      <div className="w-full flex flex-col md:flex-row md:items-center gap-2.5 md:gap-3">
-        {/* Linha Superior no Mobile / Botão <- Início no Desktop */}
-        <div className="flex items-center justify-between md:justify-start gap-2 shrink-0">
-          <Link href="/" aria-label="Voltar para a página inicial">
-            <Button
-              variant="hud-icon"
-              size="md"
-              className="h-9 sm:h-10 px-3.5 gap-2"
+    <motion.header
+      initial={reduceMotion ? false : { opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: EASE_OUT }}
+      className="w-full ds-navbar-shell shrink-0 z-30"
+    >
+      <div className="w-full max-w-5xl mx-auto px-3 sm:px-6 py-2.5 flex flex-col md:flex-row md:items-center gap-2.5 md:gap-4">
+        <div className="flex items-center justify-between md:justify-start gap-2.5 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/"
+              aria-label="Voltar para a página inicial"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl play-hud-icon-btn inline-flex items-center justify-center shrink-0"
             >
-              <ArrowLeft className="w-4 h-4 shrink-0" aria-hidden="true" />
-              <span className="text-xs sm:text-sm font-semibold">Início</span>
-            </Button>
-          </Link>
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+            </Link>
 
-          {/* Bolinhas + Botões à direita no mobile (< md) */}
-          <div className="flex md:hidden items-center gap-1.5">
-            {renderChanceOrbs()}
+            <h1 className="ds-navbar-wordmark font-display text-2xl sm:text-3xl tracking-wider text-ds-ink select-none flex items-center gap-0.5">
+              <span>FO</span>
+              <span className="text-ds-brand">O</span>
+              <span>TLE</span>
+            </h1>
+          </div>
 
-            <Button
-              variant="hud-icon"
-              size="icon"
-              onClick={onOpenRules}
-              title="Regras do Jogo"
-              aria-label="Regras do Jogo"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </Button>
-
-            <Button
-              variant="hud-icon"
-              size="icon"
-              onClick={onOpenStats}
-              title="Estatísticas e Sequência"
-              aria-label="Estatísticas e Sequência"
-            >
-              <BarChart2 className="w-4 h-4" />
-            </Button>
+          <div className="flex md:hidden items-center">
+            {renderHudControls()}
           </div>
         </div>
 
-        {/* Barra de Pesquisa central na mesma superfície padrão */}
-        <div className="flex-1 min-w-0 w-full">
+        <div className="flex-1 min-w-0 w-full md:max-w-xl md:mx-auto">
           <HeaderSearch
             onSelectPlayer={onSelectPlayer}
             disabled={disabled}
@@ -151,31 +109,10 @@ export function PlayHud({
           />
         </div>
 
-        {/* Bolinhas + Botões à direita no desktop (md+) */}
-        <div className="hidden md:flex items-center gap-2 shrink-0">
-          {renderChanceOrbs()}
-
-          <Button
-            variant="hud-icon"
-            size="icon"
-            onClick={onOpenRules}
-            title="Regras do Jogo"
-            aria-label="Regras do Jogo"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </Button>
-
-          <Button
-            variant="hud-icon"
-            size="icon"
-            onClick={onOpenStats}
-            title="Estatísticas e Sequência"
-            aria-label="Estatísticas e Sequência"
-          >
-            <BarChart2 className="w-4 h-4" />
-          </Button>
+        <div className="hidden md:flex items-center shrink-0">
+          {renderHudControls()}
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }

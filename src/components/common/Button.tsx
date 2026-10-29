@@ -14,20 +14,18 @@ export type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Estilo visual do botão */
   variant?: ButtonVariant;
-  /** Escala dimensional do botão */
   size?: ButtonSize;
-  /** Ícone opcional inserido à esquerda do texto */
   icon?: React.ReactNode;
 }
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   gradient: "btn-gradient-primary active:scale-95",
   outline: "play-hud-icon-btn active:scale-95",
-  ghost: "bg-transparent hover:bg-white/10 text-stadium-muted hover:text-stadium-ink active:scale-95",
+  ghost:
+    "bg-transparent hover:bg-ds-elevated text-ds-muted hover:text-ds-ink active:scale-95 focus-visible:ring-2 focus-visible:ring-ds-brand",
   card: "play-hud-icon-btn active:scale-95",
-  "emerald-pill": "btn-emerald-pill rounded-full active:scale-[0.98]",
+  "emerald-pill": "btn-emerald-pill rounded-full active:scale-95",
   "hud-icon": "play-hud-icon-btn active:scale-95"
 };
 
@@ -39,7 +37,8 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 };
 
 /**
- * @description Componente Button genérico e acessível unificado na paleta Petróleo & Esmeralda.
+ * @example
+ * <Button variant="hud-icon" size="icon" onClick={openRules} aria-label="Regras" />
  */
 export function Button({
   variant = "gradient",
@@ -62,7 +61,7 @@ export function Button({
     <button
       type={type}
       disabled={disabled}
-      className={`inline-flex items-center justify-center font-medium transition-transform duration-150 cursor-pointer select-none outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer select-none outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ${variantClass} ${sizeClass} ${className}`}
       {...props}
     >
       {icon && <span className="shrink-0">{icon}</span>}

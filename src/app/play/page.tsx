@@ -1,26 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { AlertTriangle, X } from "lucide-react";
 import { PlayHud } from "@/components/Header/PlayHud";
 import { GameBoard } from "@/components/Board/GameBoard";
 import { PlayArenaBackdrop } from "@/components/Board/PlayArenaBackdrop";
 import { ModalViewRules } from "@/components/modals/ModalViewRules";
-import { ModalViewStats, UserStats } from "@/components/modals/ModalViewStats";
+import { ModalViewStats } from "@/components/modals/ModalViewStats";
 import { useGame } from "@/hooks/useGame";
 import { useModal } from "@/hooks/useModal";
-import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
-import { AlertTriangle, X } from "lucide-react";
+import { usePlayStats } from "@/hooks/usePlayStats";
+import type { SearchPlayerItem } from "@/hooks/usePlayerSearch";
 
-const DEFAULT_STATS: UserStats = {
-  played: 0,
-  won: 0,
-  lost: 0,
-  currentStreak: 0,
-  maxStreak: 0
-};
+const ENTER_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const EXIT_EASE: [number, number, number, number] = [0.4, 0, 1, 1];
 
 /**
- * @description Página do jogo diário (/play) em Arena Noturna limpa (sem linhas cruzando os cards).
+ * @example
+ * <PlayPage />
  */
 export default function PlayPage() {
   const {
@@ -39,48 +37,10 @@ export default function PlayPage() {
     attemptsLeft
   } = useGame();
 
+  const reduceMotion = useReducedMotion();
   const rulesModal = useModal(false);
   const statsModal = useModal(false);
-
-  const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("footle_user_stats");
-      if (saved) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setStats(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.warn("Erro ao ler estatísticas:", e);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isWon && !isGameOver) return;
-
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      const recordedKey = `footle_recorded_${today}`;
-      if (localStorage.getItem(recordedKey)) return;
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setStats((prev) => {
-        const won = isWon ? prev.won + 1 : prev.won;
-        const lost = isGameOver && !isWon ? prev.lost + 1 : prev.lost;
-        const played = prev.played + 1;
-        const currentStreak = isWon ? prev.currentStreak + 1 : 0;
-        const maxStreak = Math.max(prev.maxStreak, currentStreak);
-
-        const updated = { played, won, lost, currentStreak, maxStreak };
-        localStorage.setItem("footle_user_stats", JSON.stringify(updated));
-        localStorage.setItem(recordedKey, "true");
-        return updated;
-      });
-    } catch (e) {
-      console.warn("Erro ao atualizar estatísticas:", e);
-    }
-  }, [isWon, isGameOver]);
+  const stats = usePlayStats({ isWon, isGameOver });
 
   const handleSelectPlayer = (player: SearchPlayerItem) => {
     submitGuess(player);
@@ -89,7 +49,7 @@ export default function PlayPage() {
   return (
     <>
       <PlayArenaBackdrop />
-      <div className="relative z-10 h-dvh max-h-dvh w-full overflow-hidden flex flex-col px-3 sm:px-6 pt-2 sm:pt-4 pb-2 landing-root">
+      <div className="relative z-10 h-dvh max-h-dvh w-full overflow-hidden flex flex-col landing-root">
         <PlayHud
           onSelectPlayer={handleSelectPlayer}
           disabled={isWon || isGameOver || pendingGuess !== null}
@@ -101,27 +61,49 @@ export default function PlayPage() {
           onOpenStats={statsModal.open}
         />
 
-        {errorMsg && (
-          <div
-            role="alert"
-            className="w-full max-w-4xl lg:max-w-5xl mx-auto mb-2 px-4 py-2.5 rounded-xl tile-status-partial flex items-center justify-between gap-3 shrink-0 z-20 text-xs sm:text-sm"
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <AlertTriangle className="w-4 h-4 text-amber-300 shrink-0" />
-              <span className="truncate font-medium">{errorMsg}</span>
+        <AnimatePresence>
+          {errorMsg && (
+            <div className="w-full max-w-5xl mx-auto px-3 sm:px-6 pt-2.5 shrink-0 z-20">
+              <motion.div
+                role="alert"
+                initial={reduceMotion ? false : { opacity: 0, y: -10 }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.22, ease: ENTER_EASE }
+                }}
+                exit={
+                  reduceMotion
+                    ? { opacity: 0 }
+                    : {
+                        opacity: 0,
+                        y: -6,
+                        transition: { duration: 0.15, ease: EXIT_EASE }
+                      }
+                }
+                className="w-full px-4 py-2.5 rounded-xl bg-ds-surface border border-ds-danger/50 flex items-center justify-between gap-3 text-xs sm:text-sm text-ds-ink"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <AlertTriangle
+                    className="w-4 h-4 text-ds-danger shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span className="truncate font-medium">{errorMsg}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearError}
+                  aria-label="Fechar aviso"
+                  className="text-ds-muted hover:text-ds-ink transition-colors cursor-pointer shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </motion.div>
             </div>
-            <button
-              type="button"
-              onClick={clearError}
-              aria-label="Fechar aviso"
-              className="text-white/80 hover:text-white cursor-pointer shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
 
-        <main className="flex-1 w-full min-h-0 flex flex-col items-center pb-1">
+        <main className="flex-1 w-full min-h-0 flex flex-col items-center">
           <GameBoard
             guesses={guesses}
             pendingGuess={pendingGuess}
@@ -135,10 +117,7 @@ export default function PlayPage() {
           />
         </main>
 
-        <ModalViewRules
-          isOpen={rulesModal.isOpen}
-          onClose={rulesModal.close}
-        />
+        <ModalViewRules isOpen={rulesModal.isOpen} onClose={rulesModal.close} />
         <ModalViewStats
           isOpen={statsModal.isOpen}
           onClose={statsModal.close}

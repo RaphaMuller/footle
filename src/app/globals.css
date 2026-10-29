@@ -41,6 +41,26 @@
   --color-stadium-cta: var(--stadium-cta);
   --color-stadium-cta-hover: var(--stadium-cta-hover);
   --color-stadium-cta-ink: var(--stadium-cta-ink);
+
+  --color-ds-canvas: var(--ds-canvas);
+  --color-ds-surface: var(--ds-surface);
+  --color-ds-elevated: var(--ds-elevated);
+  --color-ds-inset: var(--ds-inset);
+  --color-ds-border: var(--ds-border);
+  --color-ds-border-strong: var(--ds-border-strong);
+  --color-ds-ink: var(--ds-ink);
+  --color-ds-muted: var(--ds-muted);
+  --color-ds-subtle: var(--ds-subtle);
+  --color-ds-brand: var(--ds-brand);
+  --color-ds-brand-hover: var(--ds-brand-hover);
+  --color-ds-brand-ink: var(--ds-brand-ink);
+  --color-ds-correct: var(--ds-correct);
+  --color-ds-correct-border: var(--ds-correct-border);
+  --color-ds-partial: var(--ds-partial);
+  --color-ds-partial-border: var(--ds-partial-border);
+  --color-ds-miss: var(--ds-miss);
+  --color-ds-miss-border: var(--ds-miss-border);
+  --color-ds-danger: var(--ds-danger);
 }
 
 :root {
@@ -91,9 +111,30 @@
   --stadium-cta-ink: #04160e;
 
   /* Superfícies Fosca Escura & Status Vibrantes do Tabuleiro (/play) */
-  --play-card-start: #0b191e;
-  --play-card-end: #122622;
-  --play-tile-neutral: #071114;
+  --play-card-start: #121722;
+  --play-card-end: #121722;
+  --play-tile-neutral: #1c2333;
+
+  /* Design System Slate Arena Dark & Feedback Semântico Esportivo */
+  --ds-canvas: #090c12;
+  --ds-surface: #121722;
+  --ds-elevated: #19202e;
+  --ds-inset: #0c1018;
+  --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-border-strong: rgba(255, 255, 255, 0.18);
+  --ds-ink: #f8fafc;
+  --ds-muted: #94a3b8;
+  --ds-subtle: #64748b;
+  --ds-brand: #22c55e;
+  --ds-brand-hover: #4ade80;
+  --ds-brand-ink: #04130a;
+  --ds-correct: #16a34a;
+  --ds-correct-border: #4ade80;
+  --ds-partial: #ca8a04;
+  --ds-partial-border: #facc15;
+  --ds-miss: #1c2333;
+  --ds-miss-border: rgba(255, 255, 255, 0.09);
+  --ds-danger: #ef4444;
 
   /* Escala Tipográfica Fluida */
   --text-display: clamp(2.4rem, 7vw, 4.2rem);
@@ -487,19 +528,19 @@
 }
 
 /* ==========================================================
-   INTERFACE DE JOGO (/play): ARENA NOTURNA, CONTROLES & FLIP 3D
+   INTERFACE DE JOGO (/play): SLATE ARENA DARK, NAVBAR & FLIP 3D
    ========================================================== */
 .play-arena-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-color: var(--tactical-sheet-bg);
+  background-color: var(--ds-canvas);
   background-image: linear-gradient(
     180deg,
-    #081713 0%,
-    #06100e 52%,
-    #040908 100%
+    #0d111a 0%,
+    #090c12 52%,
+    #06080d 100%
   );
 }
 
@@ -508,15 +549,15 @@
   inset: 0;
   background-image:
     radial-gradient(
-      ellipse 56% 44% at 14% -6%,
-      rgba(209, 250, 229, 0.075) 0%,
-      rgba(52, 211, 153, 0.04) 42%,
+      ellipse 52% 40% at 16% -6%,
+      rgba(248, 250, 252, 0.05) 0%,
+      rgba(148, 163, 184, 0.02) 45%,
       transparent 74%
     ),
     radial-gradient(
-      ellipse 56% 44% at 86% -6%,
-      rgba(209, 250, 229, 0.075) 0%,
-      rgba(52, 211, 153, 0.04) 42%,
+      ellipse 52% 40% at 84% -6%,
+      rgba(248, 250, 252, 0.05) 0%,
+      rgba(148, 163, 184, 0.02) 45%,
       transparent 74%
     );
 }
@@ -525,104 +566,101 @@
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
-    ellipse 860px 360px at 50% 18%,
-    rgba(16, 185, 129, 0.065) 0%,
-    rgba(15, 23, 42, 0.03) 48%,
+    ellipse 820px 320px at 50% 10%,
+    rgba(34, 197, 94, 0.035) 0%,
+    rgba(30, 41, 59, 0.03) 50%,
     transparent 76%
   );
 }
 
+.ds-navbar-shell {
+  background-color: rgba(18, 23, 34, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.ds-navbar-wordmark {
+  text-shadow: none;
+  line-height: 1;
+}
+
+.ds-modal-shell {
+  background-color: var(--ds-surface);
+  border: 1px solid var(--ds-border-strong);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.72);
+}
+
 .play-ghost-slot {
-  background: linear-gradient(
-    145deg,
-    rgba(11, 25, 30, 0.56) 0%,
-    rgba(18, 38, 34, 0.44) 100%
-  );
-  border: 1.5px dashed rgba(52, 211, 153, 0.24);
+  background-color: rgba(18, 23, 34, 0.72);
+  border: 1px dashed var(--ds-border-strong);
 }
 
 .play-ghost-avatar {
-  border: 1.5px dashed rgba(255, 255, 255, 0.2);
-  background-color: rgba(7, 17, 20, 0.58);
+  border: 1px dashed var(--ds-border-strong);
+  background-color: var(--ds-inset);
 }
 
 .play-ghost-tile {
-  background-color: rgba(7, 17, 20, 0.55);
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background-color: var(--ds-inset);
+  border: 1px dashed var(--ds-border);
 }
+
 .play-search-input {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.14),
-    rgba(15, 23, 42, 0.58),
-    rgba(2, 6, 23, 0.86)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.34),
-    0 12px 28px rgba(0, 0, 0, 0.55);
-  color: #ffffff;
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  background-color: var(--ds-inset);
+  border: 1px solid var(--ds-border-strong);
+  color: var(--ds-ink);
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background-color 0.16s ease;
 }
 
 .play-search-input::placeholder {
-  color: rgba(226, 232, 240, 0.65);
+  color: var(--ds-subtle);
 }
 
 .play-search-input:focus {
-  border-color: rgba(255, 255, 255, 0.48);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.4),
-    0 0 0 3px rgba(255, 255, 255, 0.12),
-    0 12px 28px rgba(0, 0, 0, 0.6);
+  background-color: var(--ds-surface);
+  border-color: var(--ds-brand);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16);
 }
 
 .play-search-dropdown {
-  background: linear-gradient(
-    to bottom,
-    rgba(15, 23, 42, 0.96),
-    rgba(2, 6, 23, 0.98)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.78);
+  background-color: var(--ds-surface);
+  border: 1px solid var(--ds-border-strong);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.72);
 }
 
 .play-hud-icon-btn {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.15),
-    rgba(15, 23, 42, 0.55),
-    rgba(2, 6, 23, 0.85)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.36),
-    0 10px 24px rgba(0, 0, 0, 0.55);
-  color: #e2e8f0;
-  transition: border-color 0.16s ease, color 0.16s ease, transform 0.14s ease;
+  background-color: var(--ds-inset);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-muted);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .play-hud-icon-btn:hover {
-  border-color: rgba(255, 255, 255, 0.46);
-  color: #ffffff;
+  background-color: var(--ds-elevated);
+  border-color: var(--ds-border-strong);
+  color: var(--ds-ink);
+}
+
+.play-hud-icon-btn:focus-visible {
+  outline: 2px solid var(--ds-brand);
+  outline-offset: 2px;
 }
 
 .play-orbs-pill {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.14),
-    rgba(15, 23, 42, 0.55),
-    rgba(2, 6, 23, 0.85)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.32),
-    0 10px 24px rgba(0, 0, 0, 0.55);
+  background-color: var(--ds-inset);
+  border: 1px solid var(--ds-border);
 }
 
 .player-avatar-ring {
-  border: 2px solid rgba(255, 255, 255, 0.22);
-  background-color: rgba(15, 23, 42, 0.35);
+  border: 2px solid var(--ds-border-strong);
+  background-color: var(--ds-inset);
 }
 
 .tile-flip-scene {
@@ -656,82 +694,70 @@
 }
 
 .chance-slot-empty {
-  background-color: rgba(7, 17, 20, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .chance-orb-active {
-  background: radial-gradient(
-    circle at 35% 30%,
-    #6ee7b7 0%,
-    #10b981 62%,
-    #047857 100%
-  );
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.45);
+  background-color: var(--ds-brand);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.45);
 }
 
 .card-play-surface {
-  background: linear-gradient(
-    145deg,
-    var(--play-card-start) 0%,
-    var(--play-card-end) 100%
-  );
-  border: 1px solid var(--stadium-border);
-  color: var(--stadium-ink);
+  background-color: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-ink);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
 }
 
 .card-play-active {
-  border-color: rgba(52, 211, 153, 0.44);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+  background-color: var(--ds-elevated);
+  border-color: var(--ds-border-strong);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
 }
 
 .card-play-victory {
-  border-color: rgba(52, 211, 153, 0.78);
-  box-shadow: 0 0 28px rgba(16, 185, 129, 0.24), 0 14px 34px rgba(0, 0, 0, 0.52);
+  border-color: var(--ds-correct-border);
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.24),
+    0 12px 32px rgba(0, 0, 0, 0.48);
 }
 
 .tile-status-neutral {
-  background-color: var(--play-tile-neutral);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  color: var(--stadium-ink);
+  background-color: var(--ds-miss);
+  border: 1px solid var(--ds-miss-border);
+  color: var(--ds-ink);
 }
 
 .tile-status-correct {
-  background: linear-gradient(
-    160deg,
-    rgba(5, 150, 105, 0.46) 0%,
-    rgba(4, 120, 87, 0.36) 100%
-  );
-  border: 1px solid rgba(52, 211, 153, 0.88);
+  background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+  border: 1px solid var(--ds-correct-border);
   color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .tile-status-partial {
-  background: linear-gradient(
-    160deg,
-    rgba(217, 119, 6, 0.42) 0%,
-    rgba(180, 83, 9, 0.34) 100%
-  );
-  border: 1px solid rgba(251, 191, 36, 0.88);
+  background: linear-gradient(180deg, #ca8a04 0%, #a16207 100%);
+  border: 1px solid var(--ds-partial-border);
   color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .tile-status-pending {
-  background-color: var(--play-tile-neutral);
-  border: 1px dashed rgba(52, 211, 153, 0.28);
-  color: var(--stadium-subtle);
+  background-color: var(--ds-inset);
+  border: 1px dashed var(--ds-border-strong);
+  color: var(--ds-subtle);
 }
 
 .club-ring-exact {
-  background-color: rgba(16, 185, 129, 0.28);
-  border: 2px solid #34d399;
-  box-shadow: 0 0 12px rgba(52, 211, 153, 0.6);
+  background-color: rgba(22, 163, 74, 0.28);
+  border: 2px solid var(--ds-correct-border);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.45);
 }
 
 .club-ring-match {
-  background-color: rgba(245, 158, 11, 0.28);
-  border: 2px solid #fbbf24;
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+  background-color: rgba(202, 138, 4, 0.28);
+  border: 2px solid var(--ds-partial-border);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.45);
 }
 
 .tile-arrow-badge {
