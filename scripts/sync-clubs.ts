@@ -2,14 +2,21 @@ import { createClient } from "@supabase/supabase-js";
 import { FOTMOB_CLUB_MAP, getClubLogo } from "../src/lib/clubs.ts";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Erro: Credenciais do Supabase não encontradas no ambiente.");
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error(
+    "Erro: NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY são obrigatórias para sincronizar public.clubs."
+  );
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, serviceRoleKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 async function syncClubs() {
   console.log("Iniciando sincronização de escudos de clubes...");

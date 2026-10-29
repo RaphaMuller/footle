@@ -1,11 +1,12 @@
 import { cacheLife, cacheTag } from "next/cache";
+import { getGameDateString } from "./gameDate";
 import { getModePlayers } from "./players.service";
 import { supabaseAdmin } from "./supabase/admin";
 import { mapDbRowToPlayer, supabase, type DbPlayerRow } from "./supabase/client";
 import type { Player } from "./schemas";
 
 export function getTodayDateString(): string {
-  return new Date().toISOString().split("T")[0];
+  return getGameDateString();
 }
 
 function computeDeterministicIndex(dateStr: string, mode: string, total: number): number {

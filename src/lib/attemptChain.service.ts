@@ -7,6 +7,8 @@ const MAX_CHAIN_LENGTH = 10;
 const SHA256_HEX_LENGTH = 64;
 const HMAC_CONTEXT = "footle-attempt-chain-v1";
 
+let hasWarnedMissingKey = false;
+
 export interface AttachAttemptCookieParams {
   res: NextResponse;
   dateStr: string;
@@ -16,8 +18,20 @@ export interface AttachAttemptCookieParams {
 
 function getSigningKey(): Buffer | null {
   const rawSecret = process.env.FOOTLE_HMAC_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!rawSecret) return null;
+  if (!rawSecret) {
+    if (!hasWarnedMissingKey) {
+      hasWarnedMissingKey = true;
+      console.warn(
+        "[Footle Security] FOOTLE_HMAC_SECRET e SUPABASE_SERVICE_ROLE_KEY ausentes; assinatura de cadeia de tentativas desativada."
+      );
+    }
+    return null;
+  }
   return createHmac("sha256", rawSecret).update(HMAC_CONTEXT).digest();
+}
+
+export function isAttemptSigningConfigured(): boolean {
+  return getSigningKey() !== null;
 }
 
 function signPayload(payload: string, key: Buffer): string {

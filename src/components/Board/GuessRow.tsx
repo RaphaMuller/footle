@@ -6,7 +6,7 @@ import {
   Shield,
   Trophy,
   Footprints,
-  Calendar,
+  Ruler,
   Flame
 } from "lucide-react";
 import { CardRoot } from "@/components/common/CardRoot";
@@ -69,8 +69,8 @@ export function GuessRow({
     { label: "Clubes", icon: Shield, feedback: categories?.currentClub },
     { label: "Liga", icon: Trophy, feedback: categories?.league },
     { label: "Posição", icon: Footprints, feedback: categories?.position },
-    { label: "Idade", icon: Calendar, feedback: categories?.age },
-    { label: "Gols", icon: Flame, feedback: categories?.careerGoals }
+    { label: "Altura", icon: Ruler, feedback: categories?.height },
+    { label: "Gols em Ligas", icon: Flame, feedback: categories?.careerGoals }
   ];
 
   const renderTileGrid = () => (

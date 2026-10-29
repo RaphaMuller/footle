@@ -21,7 +21,9 @@ export const PlayerSchema = z.object({
   league: z.string().min(1),
   primaryPosition: PrimaryPositionEnum,
   positions: z.array(z.string()).min(1),
-  age: z.number().int().positive(),
+  age: z.number().int().positive().optional().default(25),
+  height: z.number().int().positive().optional().default(180),
+  sitelinks: z.number().int().nonnegative().optional().default(10),
   careerGoals: z.number().int().nonnegative(),
   pastClubs: z.array(z.string()).min(1),
   photoUrl: z.string().url(),
@@ -89,6 +91,9 @@ export type GuessInput = z.infer<typeof GuessInputSchema>;
 export const FeedbackStatusSchema = z.enum(["CORRECT", "PARTIAL", "INCORRECT", "HIGHER", "LOWER"]);
 export type FeedbackStatus = z.infer<typeof FeedbackStatusSchema>;
 
+export const DirectionHintSchema = z.enum(["UP", "DOWN"]);
+export type DirectionHint = z.infer<typeof DirectionHintSchema>;
+
 export const ClubFeedbackItemSchema = z.object({
   name: z.string(),
   url: z.string(),
@@ -101,6 +106,7 @@ export type ClubFeedbackItem = z.infer<typeof ClubFeedbackItemSchema>;
 export const CategoryFeedbackSchema = z.object({
   value: z.union([z.string(), z.number(), z.array(z.string())]),
   status: FeedbackStatusSchema,
+  direction: DirectionHintSchema.optional(),
   hint: z.string().optional(),
   icons: z.array(z.string()).optional(),
   clubItems: z.array(ClubFeedbackItemSchema).optional(),
@@ -126,8 +132,9 @@ export const GuessEvaluationSchema = z.object({
     currentClub: CategoryFeedbackSchema,
     league: CategoryFeedbackSchema,
     position: CategoryFeedbackSchema,
-    age: CategoryFeedbackSchema,
-    careerGoals: CategoryFeedbackSchema
+    height: CategoryFeedbackSchema,
+    careerGoals: CategoryFeedbackSchema,
+    age: CategoryFeedbackSchema.optional()
   })
 });
 
@@ -144,5 +151,7 @@ export const UserStatsSchema = z.object({
   won: z.number().int().nonnegative(),
   lost: z.number().int().nonnegative(),
   currentStreak: z.number().int().nonnegative(),
-  maxStreak: z.number().int().nonnegative()
+  maxStreak: z.number().int().nonnegative(),
+  lastPlayedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  lastWonDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
 });

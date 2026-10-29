@@ -7,7 +7,7 @@ import {
   Shield,
   Trophy,
   Footprints,
-  Calendar,
+  Ruler,
   Flame
 } from "lucide-react";
 import { SoccerBallIcon } from "@/components/Landing/SoccerBallIcon";
@@ -21,8 +21,8 @@ const GHOST_TILES = [
   { label: "Clubes", icon: Shield },
   { label: "Liga", icon: Trophy },
   { label: "Posição", icon: Footprints },
-  { label: "Idade", icon: Calendar },
-  { label: "Gols", icon: Flame }
+  { label: "Altura", icon: Ruler },
+  { label: "Gols em Ligas", icon: Flame }
 ];
 
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];

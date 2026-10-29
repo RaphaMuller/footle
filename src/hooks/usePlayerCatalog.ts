@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getGameDateString } from "@/lib/gameDate";
 import { CatalogResponseSchema } from "@/lib/schemas";
 
 const CATALOG_CACHE_NAME = "footle-player-catalog-v1";
@@ -103,7 +104,7 @@ export function usePlayerCatalog(mode: string = "big-five") {
   useEffect(() => {
     let cancelled = false;
     const requestUrl = `/api/catalog?mode=${encodeURIComponent(mode)}`;
-    const today = new Date().toISOString().split("T")[0];
+    const today = getGameDateString();
 
     async function hydrateCatalog() {
       const inMemory = memoryCatalogMap.get(mode);

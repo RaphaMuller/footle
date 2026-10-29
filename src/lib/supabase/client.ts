@@ -30,7 +30,9 @@ export interface DbPlayerRow {
   league: string;
   primary_position: "Goleiro" | "Defensor" | "Meio-campista" | "Atacante";
   positions: string[];
-  age: number;
+  age?: number;
+  height?: number;
+  sitelinks?: number;
   career_goals: number;
   past_clubs: string[];
   photo_url: string;
@@ -54,7 +56,9 @@ export function mapDbRowToPlayer(row: DbPlayerRow): Player {
     league: row.league,
     primaryPosition: row.primary_position,
     positions: row.positions || [],
-    age: Number(row.age),
+    age: Number(row.age || 25),
+    height: Number(row.height || 180),
+    sitelinks: Number(row.sitelinks || 10),
     careerGoals: Number(row.career_goals || 0),
     pastClubs: row.past_clubs || [],
     photoUrl: row.photo_url,
@@ -80,7 +84,9 @@ export function mapPlayerToDbRow(player: Player): DbPlayerRow {
     league: player.league,
     primary_position: player.primaryPosition,
     positions: player.positions,
-    age: player.age,
+    age: player.age ?? 25,
+    height: player.height ?? 180,
+    sitelinks: player.sitelinks ?? 10,
     career_goals: player.careerGoals,
     past_clubs: player.pastClubs,
     photo_url: player.photoUrl,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { getGameDateString } from "@/lib/gameDate";
 import { GuessEvaluation, Player, SavedGameStateSchema } from "@/lib/schemas";
 import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
 
@@ -19,7 +20,7 @@ export interface PendingGuessItem {
 
 function getStorageKey(mode: string = "big-five"): string {
   if (typeof window === "undefined") return "";
-  const today = new Date().toISOString().split("T")[0];
+  const today = getGameDateString();
   return `footle_game_v4_${mode}_${today}`;
 }
 
@@ -160,7 +161,7 @@ export function useGame(mode: string = "big-five") {
           }
           revealTimerRef.current = setTimeout(() => {
             setIsResultReady(true);
-          }, 1450);
+          }, 1950);
         }
 
         const key = getStorageKey(mode);

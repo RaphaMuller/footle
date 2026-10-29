@@ -22,9 +22,9 @@ export function LandingFooter() {
       transition={{ duration: 0.42, ease: QUINT_OUT }}
       className="w-full card-stadium-matte rounded-2xl p-5 sm:p-6 flex flex-col gap-5"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 text-left">
+      <div className="grid grid-cols-2 sm:grid-cols-12 gap-6 text-left">
         {/* Coluna 1: Identidade Footle */}
-        <div className="sm:col-span-5 flex flex-col items-start">
+        <div className="col-span-2 sm:col-span-5 flex flex-col items-center sm:items-start text-center sm:text-left">
           <a
             href="#topo"
             aria-label="Footle, voltar ao topo"
@@ -42,12 +42,12 @@ export function LandingFooter() {
           </p>
 
           <span className="text-xs text-stadium-subtle mt-2.5">
-            © 2026 Footle. Jogo gratuito e sem cadastro.
+            ©2026 - By Raphael Muller - Footle.
           </span>
         </div>
 
         {/* Coluna 2: Navegação Rápida */}
-        <nav aria-label="Navegação do rodapé" className="sm:col-span-4 flex flex-col">
+        <nav aria-label="Navegação do rodapé" className="col-span-1 sm:col-span-4 flex flex-col">
           <span className="text-xs font-bold text-stadium-accent">
             Navegação
           </span>
@@ -89,7 +89,7 @@ export function LandingFooter() {
         </nav>
 
         {/* Coluna 3: Comunidade e Código */}
-        <div className="sm:col-span-3 flex flex-col">
+        <div className="col-span-1 sm:col-span-3 flex flex-col">
           <span className="text-xs font-bold text-stadium-accent">
             Projeto
           </span>
@@ -133,7 +133,7 @@ export function LandingFooter() {
       </div>
 
       {/* Nota Legal Independente (separada por degrau de superfície, sem hairline) */}
-      <div className="surface-stadium-inset rounded-xl px-3.5 py-2.5 text-xs text-stadium-subtle leading-relaxed text-left sm:text-center">
+      <div className="surface-stadium-inset rounded-xl px-3.5 py-2.5 text-xs text-stadium-subtle leading-relaxed text-center">
         Projeto independente feito para fãs de futebol, sem vínculo comercial ou oficial com FIFA, UEFA, ligas nacionais ou clubes exibidos.
       </div>
     </motion.footer>

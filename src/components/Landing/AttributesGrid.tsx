@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Globe, Shield, Trophy, Footprints, Calendar, Flame } from "lucide-react";
+import { Globe, Shield, Trophy, Footprints, Ruler, Flame } from "lucide-react";
 
 export interface AttributeSummaryItem {
   id: string;
@@ -37,15 +37,15 @@ const ATTRIBUTE_ITEMS: AttributeSummaryItem[] = [
     icon: Footprints
   },
   {
-    id: "attr-age",
-    label: "Idade",
-    description: "Idade atual acompanhada de setas indicando se o alvo secreto é mais velho (↑) ou mais novo (↓).",
-    icon: Calendar
+    id: "attr-height",
+    label: "Altura",
+    description: "Altura oficial em centímetros: acende âmbar a até ±3 cm de diferença e aponta (↑/↓).",
+    icon: Ruler
   },
   {
     id: "attr-goals",
-    label: "Gols na Carreira",
-    description: "Contagem oficial na carreira: acende âmbar até ±25 gols de distância e aponta (↑/↓).",
+    label: "Gols em Ligas",
+    description: "Gols marcados em ligas nacionais de clubes: acende âmbar até ±25 gols e aponta (↑/↓).",
     icon: Flame
   }
 ];

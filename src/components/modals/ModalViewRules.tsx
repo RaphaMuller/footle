@@ -11,7 +11,7 @@ import {
   Shield,
   Trophy,
   Footprints,
-  Calendar,
+  Ruler,
   Flame
 } from "lucide-react";
 import { Modal } from "@/components/common/Modal";
@@ -26,29 +26,29 @@ const ATTRIBUTES = [
   { label: "Clubes", icon: Shield },
   { label: "Liga", icon: Trophy },
   { label: "Posição", icon: Footprints },
-  { label: "Idade", icon: Calendar },
-  { label: "Gols", icon: Flame }
+  { label: "Altura", icon: Ruler },
+  { label: "Gols em Ligas", icon: Flame }
 ];
 
 const LEGEND_ITEMS = [
   {
     id: "correct",
     title: "Verde — Acerto exato",
-    description: "Mesmo país, mesmo clube atual, mesma liga, mesma posição, idade ou gols cravados.",
+    description: "Mesmo país, mesmo clube atual, mesma liga, mesma posição, altura ou gols cravados.",
     badgeClass: "tile-status-correct",
     icon: CheckCircle2
   },
   {
     id: "partial",
     title: "Âmbar — Parcial ou ex-clube",
-    description: "Mesmo continente, anel aceso em ex-clube em comum ou diferença de até ±25 gols.",
+    description: "Mesmo continente, anel em ex-clube em comum, altura até ±3 cm ou gols até ±25.",
     badgeClass: "tile-status-partial",
     icon: AlertTriangle
   },
   {
     id: "neutral",
     title: "Cinza — Sem vínculo / Direcional",
-    description: "Em Idade e Gols, as setas indicam se o craque secreto tem número maior (↑) ou menor (↓).",
+    description: "Em Altura e Gols em Ligas, as setas indicam se o craque secreto tem número maior (↑) ou menor (↓).",
     badgeClass: "tile-status-neutral",
     icon: ArrowUpDown
   }

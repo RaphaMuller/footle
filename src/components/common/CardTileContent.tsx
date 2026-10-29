@@ -112,13 +112,24 @@ export function CardTileContent({
     );
   }
 
-  if (feedback.status === "HIGHER" || feedback.status === "LOWER") {
-    const isHigher = feedback.status === "HIGHER";
+  const resolvedDirection =
+    feedback.direction ??
+    (feedback.status === "HIGHER"
+      ? "UP"
+      : feedback.status === "LOWER"
+        ? "DOWN"
+        : undefined);
+
+  if (resolvedDirection) {
+    const isHigher = resolvedDirection === "UP";
     const DirectionIcon = isHigher ? ArrowUp : ArrowDown;
     const offsetY = isHigher ? 5 : -5;
 
     return (
-      <div className="flex items-center justify-center gap-2 w-full">
+      <div
+        className="flex items-center justify-center gap-2 w-full"
+        title={feedback.hint || undefined}
+      >
         <motion.span
           initial={shouldAnimate ? { opacity: 0, y: offsetY } : false}
           animate={{ opacity: 1, y: 0 }}

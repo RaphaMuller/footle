@@ -5,6 +5,7 @@ import type { CategoryFeedback, GuessEvaluation, Player } from "./schemas";
 
 const MAX_DISPLAY_CLUBS = 5;
 const GOALS_PARTIAL_MARGIN = 25;
+const HEIGHT_PARTIAL_MARGIN = 3;
 
 function evaluateNationality(guessed: Player, target: Player): CategoryFeedback {
   const countryInfo = getCountryInfo(guessed.nationality);
@@ -89,14 +90,36 @@ function evaluatePosition(guessed: Player, target: Player): CategoryFeedback {
   return { value: guessed.primaryPosition, status: "INCORRECT" };
 }
 
-function evaluateAge(guessed: Player, target: Player): CategoryFeedback {
-  if (guessed.age === target.age) {
-    return { value: guessed.age, status: "CORRECT" };
+function evaluateHeight(guessed: Player, target: Player): CategoryFeedback {
+  const gHeight = guessed.height ?? 180;
+  const tHeight = target.height ?? 180;
+
+  if (gHeight === tHeight) {
+    return { value: `${gHeight} cm`, status: "CORRECT" };
   }
-  if (guessed.age < target.age) {
-    return { value: guessed.age, status: "HIGHER", hint: "O jogador secreto é mais velho" };
+
+  const isHigher = gHeight < tHeight;
+  const direction = isHigher ? "UP" : "DOWN";
+  const hint = isHigher
+    ? "O jogador secreto é mais alto"
+    : "O jogador secreto é mais baixo";
+  const diff = Math.abs(gHeight - tHeight);
+
+  if (diff <= HEIGHT_PARTIAL_MARGIN) {
+    return {
+      value: `${gHeight} cm`,
+      status: "PARTIAL",
+      direction,
+      hint
+    };
   }
-  return { value: guessed.age, status: "LOWER", hint: "O jogador secreto é mais novo" };
+
+  return {
+    value: `${gHeight} cm`,
+    status: isHigher ? "HIGHER" : "LOWER",
+    direction,
+    hint
+  };
 }
 
 function evaluateCareerGoals(guessed: Player, target: Player): CategoryFeedback {
@@ -104,13 +127,28 @@ function evaluateCareerGoals(guessed: Player, target: Player): CategoryFeedback 
   if (diffGoals === 0) {
     return { value: guessed.careerGoals, status: "CORRECT" };
   }
+
+  const isHigher = guessed.careerGoals < target.careerGoals;
+  const direction = isHigher ? "UP" : "DOWN";
+  const hint = isHigher
+    ? "O jogador secreto tem mais gols"
+    : "O jogador secreto tem menos gols";
+
   if (diffGoals <= GOALS_PARTIAL_MARGIN) {
-    return { value: guessed.careerGoals, status: "PARTIAL" };
+    return {
+      value: guessed.careerGoals,
+      status: "PARTIAL",
+      direction,
+      hint
+    };
   }
-  if (guessed.careerGoals < target.careerGoals) {
-    return { value: guessed.careerGoals, status: "HIGHER", hint: "O jogador secreto tem mais gols" };
-  }
-  return { value: guessed.careerGoals, status: "LOWER", hint: "O jogador secreto tem menos gols" };
+
+  return {
+    value: guessed.careerGoals,
+    status: isHigher ? "HIGHER" : "LOWER",
+    direction,
+    hint
+  };
 }
 
 export function evaluateGuess(
@@ -133,7 +171,7 @@ export function evaluateGuess(
       currentClub: evaluateClubs(guessed, target),
       league: evaluateLeague(guessed, target),
       position: evaluatePosition(guessed, target),
-      age: evaluateAge(guessed, target),
+      height: evaluateHeight(guessed, target),
       careerGoals: evaluateCareerGoals(guessed, target)
     }
   };

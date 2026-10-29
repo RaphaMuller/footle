@@ -402,6 +402,7 @@ SELECT
   ?currentClubName
   ?leagueName
   ?image
+  (MAX(?heightRaw) AS ?rawHeight)
   (GROUP_CONCAT(DISTINCT ?posLabel; separator="|") AS ?positions)
   (GROUP_CONCAT(DISTINCT ?pastClubLabel; separator="|") AS ?pastClubs)
   (GROUP_CONCAT(DISTINCT ?goalPair; separator="|") AS ?goalPairs)
@@ -438,6 +439,7 @@ WHERE {
   BIND(COALESCE(?sportCountry, ?citCountry) AS ?country)
 
   OPTIONAL { ?player wdt:P1477 ?fullName }
+  OPTIONAL { ?player wdt:P2048 ?heightRaw }
   OPTIONAL {
     ?player wdt:P413 ?pos .
     ?pos rdfs:label ?posLabel .
@@ -468,19 +470,39 @@ LIMIT 500
   url.searchParams.set("query", sparql);
   url.searchParams.set("format", "json");
 
-  const res = await fetch(url, {
-    headers: {
-      "Accept": "application/sparql-results+json",
-      "User-Agent": "FootleDataSync/1.0 (https://github.com/footle; contact@footle.local)"
-    }
-  });
+  const maxRetries = 4;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "Accept": "application/sparql-results+json",
+          "User-Agent": "FootleDataSync/1.0 (https://github.com/footle; contact@footle.local)"
+        }
+      });
 
-  if (!res.ok) {
-    throw new Error(`Wikidata SPARQL error: ${res.status} ${res.statusText}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.results.bindings as Array<Record<string, { value: string }>>;
+      }
+
+      const isTransient = [429, 500, 502, 503, 504].includes(res.status);
+      if (!isTransient || attempt === maxRetries) {
+        throw new Error(`Wikidata SPARQL error: ${res.status} ${res.statusText}`);
+      }
+
+      const delaySec = attempt * 4;
+      console.warn(`  [Wikidata] Status ${res.status}. Tentativa ${attempt}/${maxRetries}. Aguardando ${delaySec}s...`);
+      await new Promise((r) => setTimeout(r, delaySec * 1000));
+    } catch (err: unknown) {
+      if (attempt === maxRetries) throw err;
+      const delaySec = attempt * 4;
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`  [Wikidata] Falha temporária (${msg}). Tentando novamente em ${delaySec}s...`);
+      await new Promise((r) => setTimeout(r, delaySec * 1000));
+    }
   }
 
-  const data = await res.json();
-  return data.results.bindings as Array<Record<string, { value: string }>>;
+  throw new Error("Falha inesperada ao consultar Wikidata após múltiplas tentativas.");
 }
 
 function sumGoalPairs(rawGoalPairs: string): number {
@@ -570,7 +592,7 @@ async function main() {
     const rows = await fetchWikidataBatch(clubs);
     console.log(`  -> ${rows.length} registros retornados para ${league}`);
     rawBindings.push(...rows);
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2500));
   }
 
   console.log(`Higienizando e cruzando ${rawBindings.length} registros...`);
@@ -631,6 +653,18 @@ async function main() {
     const pastClubs = Array.from(pastClubsSet);
 
     const totalGoals = sumGoalPairs(row.goalPairs?.value || "");
+    const rawHeightVal = parseFloat(row.rawHeight?.value || "");
+    let height = 180;
+    if (!isNaN(rawHeightVal)) {
+      if (rawHeightVal < 3) {
+        height = Math.round(rawHeightVal * 100);
+      } else {
+        height = Math.round(rawHeightVal);
+      }
+    }
+    if (height < 140 || height > 220) height = 180;
+    const sitelinks = Number(row.sitelinks?.value || 10);
+
 
     const existing = existingByQid.get(qid);
     const mergedModes = Array.from(
@@ -651,6 +685,8 @@ async function main() {
       primaryPosition,
       positions: specificPositions.length > 0 ? specificPositions : [primaryPosition],
       age,
+      height,
+      sitelinks,
       careerGoals: totalGoals,
       pastClubs,
       photoUrl,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTodayDateString } from "@/lib/dailyChallenge.service";
+import { getSecondsUntilNextBrtMidnight } from "@/lib/gameDate";
 import { getPublicCatalog } from "@/lib/players.service";
 import { enforceRateLimit } from "@/lib/rateLimit.service";
 import { GameModeSlugSchema } from "@/lib/schemas";
@@ -29,6 +30,9 @@ export async function GET(req: NextRequest) {
       photoUrl: item.photoUrl
     }));
 
+    const sMaxAge = getSecondsUntilNextBrtMidnight();
+    const maxAge = Math.min(3600, sMaxAge);
+
     return NextResponse.json(
       {
         version: getTodayDateString(),
@@ -37,7 +41,7 @@ export async function GET(req: NextRequest) {
       },
       {
         headers: {
-          "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800"
+          "Cache-Control": `public, max-age=${maxAge}, s-maxage=${sMaxAge}, stale-while-revalidate=60`
         }
       }
     );

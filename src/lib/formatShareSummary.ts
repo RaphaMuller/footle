@@ -30,7 +30,7 @@ export function formatShareSummary({
       statusToSquare(categories.currentClub.status),
       statusToSquare(categories.league.status),
       statusToSquare(categories.position.status),
-      statusToSquare(categories.age.status),
+      statusToSquare(categories.height.status),
       statusToSquare(categories.careerGoals.status)
     ].join("");
   });

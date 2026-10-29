@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { attachAttemptCookie, readVerifiedAttemptIds } from "@/lib/attemptChain.service";
+import {
+  attachAttemptCookie,
+  isAttemptSigningConfigured,
+  readVerifiedAttemptIds
+} from "@/lib/attemptChain.service";
 import { getDailyPlayer, getTodayDateString } from "@/lib/dailyChallenge.service";
 import { evaluateGuess } from "@/lib/evaluateGuess";
 import { getPlayerById } from "@/lib/players.service";
@@ -11,6 +15,20 @@ const MAX_ATTEMPTS = 10;
 export async function POST(req: NextRequest) {
   const rateLimitRes = enforceRateLimit(req, "guess");
   if (rateLimitRes) return rateLimitRes;
+
+  const signingConfigured = isAttemptSigningConfigured();
+  if (!signingConfigured && process.env.NODE_ENV === "production") {
+    console.error(
+      "Critical misconfiguration: FOOTLE_HMAC_SECRET or SUPABASE_SERVICE_ROLE_KEY is required in production."
+    );
+    return NextResponse.json(
+      {
+        error: "Serviço temporariamente indisponível",
+        redirect: "/offline"
+      },
+      { status: 503 }
+    );
+  }
 
   try {
     const body: unknown = await req.json();
@@ -45,7 +63,9 @@ export async function POST(req: NextRequest) {
     );
 
     const evaluation = evaluateGuess(guessedPlayer, targetPlayer, guessNumber);
-    const hasCompletedAllAttempts = updatedChainIds.length >= MAX_ATTEMPTS;
+    const hasCompletedAllAttempts = signingConfigured
+      ? updatedChainIds.length >= MAX_ATTEMPTS
+      : guessNumber >= MAX_ATTEMPTS;
 
     const responseBody =
       evaluation.isVictory || hasCompletedAllAttempts

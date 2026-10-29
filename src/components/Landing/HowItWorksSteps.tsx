@@ -146,7 +146,7 @@ export function HowItWorksSteps() {
             Crave o craque secreto e vença
           </h3>
           <p className="text-xs sm:text-sm text-stadium-muted mt-1 leading-relaxed">
-            Acima, a Premier League bateu em cheio, o escudo do Manchester City acendeu como clube em comum e as setas pediram um atacante mais velho e goleador. Fechando 6 de 6 em até 10 chutes, a rodada é sua!
+            Acima, a Premier League bateu em cheio, o escudo do Manchester City acendeu como clube em comum e as setas pediram um atacante mais alto e goleador. Fechando 6 de 6 em até 10 chutes, a rodada é sua!
           </p>
         </div>
       </motion.div>

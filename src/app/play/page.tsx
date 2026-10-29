@@ -13,6 +13,7 @@ import { useModal } from "@/hooks/useModal";
 import { usePlayStats } from "@/hooks/usePlayStats";
 import type { SearchPlayerItem } from "@/hooks/usePlayerSearch";
 
+const DEFAULT_GAME_MODE = "big-five";
 const ENTER_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const EXIT_EASE: [number, number, number, number] = [0.4, 0, 1, 1];
 
@@ -35,12 +36,12 @@ export default function PlayPage() {
     guessedPlayerIds,
     maxAttempts,
     attemptsLeft
-  } = useGame();
+  } = useGame(DEFAULT_GAME_MODE);
 
   const reduceMotion = useReducedMotion();
   const rulesModal = useModal(false);
   const statsModal = useModal(false);
-  const stats = usePlayStats({ isWon, isGameOver });
+  const stats = usePlayStats({ isWon, isGameOver, mode: DEFAULT_GAME_MODE });
 
   const handleSelectPlayer = (player: SearchPlayerItem) => {
     submitGuess(player);

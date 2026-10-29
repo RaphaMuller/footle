@@ -48,6 +48,8 @@ export const ERLING_HAALAND_PLAYER: Player = {
   primaryPosition: "Atacante",
   positions: ["Centroavante"],
   age: 26,
+  height: 195,
+  sitelinks: 95,
   careerGoals: 211,
   pastClubs: [
     "Borussia Dortmund",
@@ -75,6 +77,8 @@ export const COLE_PALMER_PLAYER: Player = {
   primaryPosition: "Meio-campista",
   positions: ["Meia Ofensivo", "Ponta"],
   age: 24,
+  height: 189,
+  sitelinks: 48,
   careerGoals: 49,
   pastClubs: ["Manchester City", "Chelsea"],
   photoUrl:

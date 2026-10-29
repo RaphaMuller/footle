@@ -14,7 +14,7 @@ export interface CardTileProps extends React.HTMLAttributes<HTMLDivElement> {
   shouldReveal?: boolean;
 }
 
-const FLIP_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const FLIP_EASE: [number, number, number, number] = [0.16, 1, 0.4, 1];
 
 function resolveTileStatusClass(
   label: string,
@@ -77,8 +77,8 @@ export function CardTile({
           initial={{ rotateY: 0 }}
           animate={{ rotateY: isFlippedToFront ? 180 : 0 }}
           transition={{
-            duration: 0.48,
-            delay: isFlippedToFront ? 0.14 + revealIndex * 0.11 : 0,
+            duration: 1.6,
+            delay: isFlippedToFront ? 0.16 + revealIndex * 0.2 : 0,
             ease: FLIP_EASE
           }}
           className="tile-flip-card min-h-20 sm:min-h-22"
