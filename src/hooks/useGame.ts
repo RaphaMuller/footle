@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { GuessEvaluation, Player } from "@/lib/schemas";
+import { GuessEvaluation, Player, SavedGameStateSchema } from "@/lib/schemas";
 import { SearchPlayerItem } from "@/hooks/usePlayerSearch";
 
 export const MAX_ATTEMPTS = 10;
@@ -46,25 +46,24 @@ export function useGame(mode: string = "big-five") {
 
   useEffect(() => {
     try {
-      const today = new Date().toISOString().split("T")[0];
-      localStorage.removeItem(`footle_game_${today}`);
-      localStorage.removeItem(`footle_game_v2_${today}`);
-      localStorage.removeItem(`footle_game_v3_${today}`);
-
       const key = getStorageKey(mode);
       if (!key) return;
       const saved = localStorage.getItem(key);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        const savedGuesses: GuessEvaluation[] = parsed.guesses || [];
-        const savedWon = Boolean(parsed.isWon);
+        const parsed = SavedGameStateSchema.safeParse(JSON.parse(saved));
+        if (!parsed.success) {
+          localStorage.removeItem(key);
+          return;
+        }
+        const savedGuesses = parsed.data.guesses;
+        const savedWon = parsed.data.isWon;
         const savedGameOver = !savedWon && savedGuesses.length >= MAX_ATTEMPTS;
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setGuesses(savedGuesses);
         setIsWon(savedWon);
-        if (parsed.secretPlayer) {
-          setSecretPlayer(parsed.secretPlayer);
+        if (parsed.data.secretPlayer) {
+          setSecretPlayer(parsed.data.secretPlayer);
         }
         if (savedWon || savedGameOver) {
           setIsResultReady(true);
@@ -186,28 +185,6 @@ export function useGame(mode: string = "big-five") {
     [isWon, isGameOver, guesses, isLoading, pendingGuess, secretPlayer, mode, router]
   );
 
-  const resetGame = useCallback(() => {
-    if (revealTimerRef.current) {
-      clearTimeout(revealTimerRef.current);
-    }
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      localStorage.removeItem(`footle_game_${today}`);
-      localStorage.removeItem(`footle_game_v2_${today}`);
-      localStorage.removeItem(`footle_game_v3_${today}`);
-      localStorage.removeItem(getStorageKey(mode));
-    } catch (e) {
-      console.warn("Erro ao limpar localStorage:", e);
-    }
-    setGuesses([]);
-    setPendingGuess(null);
-    setActiveRevealGuessNumber(null);
-    setIsWon(false);
-    setSecretPlayer(null);
-    setIsResultReady(false);
-    setErrorMsg(null);
-  }, [mode]);
-
   const clearError = useCallback(() => setErrorMsg(null), []);
 
   const guessedPlayerIds = guesses.map((g) => g.guessedPlayer.id);
@@ -232,7 +209,6 @@ export function useGame(mode: string = "big-five") {
     errorMsg,
     clearError,
     submitGuess,
-    resetGame,
     guessedPlayerIds,
     maxAttempts: MAX_ATTEMPTS,
     usedChances,
