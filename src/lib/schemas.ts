@@ -1,19 +1,8 @@
 import { z } from "zod";
 
-export const LeagueEnum = z.enum([
-  "Premier League",
-  "La Liga",
-  "Serie A",
-  "Bundesliga",
-  "Ligue 1"
-]);
+export const PrimaryPositionEnum = z.enum(["Goleiro", "Defensor", "Meio-campista", "Atacante"]);
 
-export const PrimaryPositionEnum = z.enum([
-  "Goleiro",
-  "Defensor",
-  "Meio-campista",
-  "Atacante"
-]);
+export const GameModeSlugSchema = z.string().trim().min(1).max(32).regex(/^[a-z0-9-]+$/);
 
 export const PlayerExternalIdsSchema = z.object({
   wikidata: z.string().regex(/^Q\d+$/).optional(),
@@ -42,12 +31,31 @@ export const PlayerSchema = z.object({
 });
 
 export const PlayersDatabaseSchema = z.array(PlayerSchema);
-
 export type Player = z.infer<typeof PlayerSchema>;
 
+export const CatalogPlayerSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+  knownName: z.string().min(1),
+  currentClub: z.string().min(1),
+  primaryPosition: PrimaryPositionEnum,
+  nationality: z.string().min(1),
+  photoUrl: z.string()
+});
+
+export const CatalogResponseSchema = z.object({
+  version: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  mode: GameModeSlugSchema,
+  players: z.array(CatalogPlayerSchema)
+});
+
+export const SearchResponseSchema = z.object({
+  results: z.array(CatalogPlayerSchema)
+});
+
 export const GameModeSchema = z.object({
-  slug: z.string(),
-  name: z.string(),
+  slug: GameModeSlugSchema,
+  name: z.string().min(1),
   description: z.string().nullable().optional(),
   icon: z.string().nullable().optional(),
   isActive: z.boolean().default(true)
@@ -58,58 +66,83 @@ export type GameMode = z.infer<typeof GameModeSchema>;
 export const DailyChallengeSchema = z.object({
   id: z.string().uuid().optional(),
   matchDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  gameModeSlug: z.string(),
+  gameModeSlug: GameModeSlugSchema,
   playerId: z.number().int().positive(),
   player: PlayerSchema.optional()
 });
 
 export type DailyChallenge = z.infer<typeof DailyChallengeSchema>;
 
+export const SearchQuerySchema = z.object({
+  q: z.string().trim().min(2).max(60),
+  mode: GameModeSlugSchema.default("big-five")
+});
+
 export const GuessInputSchema = z.object({
   playerId: z.number().int().positive(),
-  guessNumber: z.number().int().positive().optional(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  mode: z.string().default("big-five").optional()
+  guessNumber: z.number().int().min(1).max(10).default(1),
+  mode: GameModeSlugSchema.default("big-five")
 });
 
 export type GuessInput = z.infer<typeof GuessInputSchema>;
 
-export type FeedbackStatus = "CORRECT" | "PARTIAL" | "INCORRECT" | "HIGHER" | "LOWER";
+export const FeedbackStatusSchema = z.enum(["CORRECT", "PARTIAL", "INCORRECT", "HIGHER", "LOWER"]);
+export type FeedbackStatus = z.infer<typeof FeedbackStatusSchema>;
 
-export interface ClubFeedbackItem {
-  name: string;
-  url: string;
-  isMatch: boolean;
-  isExact: boolean;
-}
+export const ClubFeedbackItemSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  isMatch: z.boolean(),
+  isExact: z.boolean()
+});
 
-export interface CategoryFeedback {
-  value: string | number | string[];
-  status: FeedbackStatus;
-  hint?: string;
-  icons?: string[];
-  clubItems?: ClubFeedbackItem[];
-  code?: string;
-  flagUrl?: string;
-  leagueLogoUrl?: string;
-}
+export type ClubFeedbackItem = z.infer<typeof ClubFeedbackItemSchema>;
 
-export interface GuessEvaluation {
-  id: string;
-  guessNumber: number;
-  guessedPlayer: {
-    id: number;
-    name: string;
-    knownName: string;
-    photoUrl: string;
-  };
-  isVictory: boolean;
-  categories: {
-    nationality: CategoryFeedback;
-    currentClub: CategoryFeedback;
-    league: CategoryFeedback;
-    position: CategoryFeedback;
-    age: CategoryFeedback;
-    careerGoals: CategoryFeedback;
-  };
-}
+export const CategoryFeedbackSchema = z.object({
+  value: z.union([z.string(), z.number(), z.array(z.string())]),
+  status: FeedbackStatusSchema,
+  hint: z.string().optional(),
+  icons: z.array(z.string()).optional(),
+  clubItems: z.array(ClubFeedbackItemSchema).optional(),
+  code: z.string().optional(),
+  flagUrl: z.string().optional(),
+  leagueLogoUrl: z.string().optional()
+});
+
+export type CategoryFeedback = z.infer<typeof CategoryFeedbackSchema>;
+
+export const GuessEvaluationSchema = z.object({
+  id: z.string(),
+  guessNumber: z.number().int().min(1).max(10),
+  guessedPlayer: z.object({
+    id: z.number().int().positive(),
+    name: z.string(),
+    knownName: z.string(),
+    photoUrl: z.string()
+  }),
+  isVictory: z.boolean(),
+  categories: z.object({
+    nationality: CategoryFeedbackSchema,
+    currentClub: CategoryFeedbackSchema,
+    league: CategoryFeedbackSchema,
+    position: CategoryFeedbackSchema,
+    age: CategoryFeedbackSchema,
+    careerGoals: CategoryFeedbackSchema
+  })
+});
+
+export type GuessEvaluation = z.infer<typeof GuessEvaluationSchema>;
+
+export const SavedGameStateSchema = z.object({
+  guesses: z.array(GuessEvaluationSchema).max(10),
+  isWon: z.boolean(),
+  secretPlayer: PlayerSchema.nullable().optional()
+});
+
+export const UserStatsSchema = z.object({
+  played: z.number().int().nonnegative(),
+  won: z.number().int().nonnegative(),
+  lost: z.number().int().nonnegative(),
+  currentStreak: z.number().int().nonnegative(),
+  maxStreak: z.number().int().nonnegative()
+});

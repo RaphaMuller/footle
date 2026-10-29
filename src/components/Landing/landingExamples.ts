@@ -1,5 +1,5 @@
 import { Player, GuessEvaluation } from "@/lib/schemas";
-import { evaluateGuess } from "@/lib/game";
+import { evaluateGuess } from "@/lib/evaluateGuess";
 import { getLeagueLogo } from "@/lib/leagues";
 
 export interface LeagueBadgeItem {

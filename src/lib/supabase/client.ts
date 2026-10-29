@@ -6,15 +6,17 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
-export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(supabaseUrl!, supabaseAnonKey!)
-  : null;
+export const supabase: SupabaseClient | null =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 /**
  * Representação da linha da tabela 'players' no PostgreSQL (snake_case)
  */
 export interface DbPlayerRow {
   id: number;
+  wikidata_id?: string | null;
   external_ids?: {
     wikidata?: string;
     footballData?: number;
@@ -68,6 +70,7 @@ export function mapDbRowToPlayer(row: DbPlayerRow): Player {
 export function mapPlayerToDbRow(player: Player): DbPlayerRow {
   return {
     id: player.id,
+    wikidata_id: player.externalIds?.wikidata ?? null,
     external_ids: player.externalIds,
     name: player.name,
     known_name: player.knownName,

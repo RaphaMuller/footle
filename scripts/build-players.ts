@@ -1,9 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
 import { PlayersDatabaseSchema, type Player } from "../src/lib/schemas.ts";
+import { supabaseAdmin } from "../src/lib/supabase/admin.ts";
 import { mapPlayerToDbRow, type DbPlayerRow } from "../src/lib/supabase/client.ts";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
  * Mapeamento oficial dos clubes das 5 Grandes Ligas na Wikidata
@@ -502,8 +499,65 @@ function sumGoalPairs(rawGoalPairs: string): number {
   return Math.round(sum);
 }
 
+async function loadExistingPlayersMap() {
+  if (!supabaseAdmin) {
+    console.error("Error: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
+    process.exit(1);
+  }
+
+  const existingByQid = new Map<string, { id: number; gameModes: string[]; isIcon: boolean }>();
+  let maxId = 0;
+  let offset = 0;
+  const pageSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabaseAdmin
+      .from("players")
+      .select("id, wikidata_id, external_ids, game_modes, is_icon")
+      .order("id", { ascending: true })
+      .range(offset, offset + pageSize - 1);
+
+    if (error) {
+      throw new Error(`Failed to fetch existing players: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) break;
+
+    for (const row of data) {
+      const numericId = Number(row.id);
+      if (numericId > maxId) maxId = numericId;
+
+      const qid =
+        (typeof row.wikidata_id === "string" && row.wikidata_id) ||
+        row.external_ids?.wikidata ||
+        "";
+
+      if (qid) {
+        existingByQid.set(qid, {
+          id: numericId,
+          gameModes: Array.isArray(row.game_modes) ? row.game_modes : ["big-five", "all"],
+          isIcon: Boolean(row.is_icon)
+        });
+      }
+    }
+
+    if (data.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  return { existingByQid, maxId };
+}
+
 async function main() {
-  console.log("Resetando JSON atual e iniciando extração em lote via Wikidata SPARQL API...");
+  if (!supabaseAdmin) {
+    console.error("Error: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
+    process.exit(1);
+  }
+
+  console.log("Loading existing player identities from Supabase...");
+  const { existingByQid, maxId } = await loadExistingPlayersMap();
+  console.log(`Found ${existingByQid.size} existing players (max id: ${maxId}).`);
+
   const today = new Date().toISOString().split("T")[0];
 
   // 5 requisições no total (1 por liga) para respeitar rate-limit e evitar timeout
@@ -522,7 +576,7 @@ async function main() {
   console.log(`Higienizando e cruzando ${rawBindings.length} registros...`);
 
   const deduplicated = new Map<string, Player>();
-  let nextId = 1;
+  let nextId = maxId + 1;
 
   for (const row of rawBindings) {
     const qid = row.player?.value.split("/").pop() || "";
@@ -578,8 +632,13 @@ async function main() {
 
     const totalGoals = sumGoalPairs(row.goalPairs?.value || "");
 
+    const existing = existingByQid.get(qid);
+    const mergedModes = Array.from(
+      new Set([...(existing?.gameModes ?? []), "big-five", "all"])
+    );
+
     const candidate: Player = {
-      id: nextId++,
+      id: existing ? existing.id : nextId++,
       externalIds: {
         wikidata: qid
       },
@@ -595,8 +654,8 @@ async function main() {
       careerGoals: totalGoals,
       pastClubs,
       photoUrl,
-      isIcon: false,
-      gameModes: ["big-five", "all"],
+      isIcon: existing?.isIcon ?? false,
+      gameModes: mergedModes,
       updatedAt: today
     };
 
@@ -606,15 +665,6 @@ async function main() {
   const playersList = Array.from(deduplicated.values());
   const validated = PlayersDatabaseSchema.parse(playersList);
 
-  if (!supabaseUrl || !supabaseKey) {
-    console.error("ERRO: NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY precisam estar configurados.");
-    process.exit(1);
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseKey, {
-    auth: { persistSession: false }
-  });
-
   console.log(`Enviando ${validated.length} atletas validados diretamente para o Supabase...`);
 
   const rows: DbPlayerRow[] = validated.map(mapPlayerToDbRow);
@@ -622,7 +672,7 @@ async function main() {
 
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from("players")
       .upsert(batch, { onConflict: "id" });
 
