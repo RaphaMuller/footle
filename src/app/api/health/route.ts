@@ -9,7 +9,6 @@ export async function GET() {
       {
         status: "unhealthy",
         database: "not_configured",
-        message: "Variáveis do Supabase não configuradas no servidor.",
         timestamp: new Date().toISOString()
       },
       { status: 503 }
@@ -28,7 +27,6 @@ export async function GET() {
         {
           status: "unhealthy",
           database: "error",
-          error: error.message,
           latencyMs,
           timestamp: new Date().toISOString()
         },
@@ -46,13 +44,12 @@ export async function GET() {
       },
       { status: 200 }
     );
-  } catch (err: unknown) {
+  } catch {
     const latencyMs = Date.now() - startTime;
     return NextResponse.json(
       {
         status: "unhealthy",
         database: "unreachable",
-        error: err instanceof Error ? err.message : "Erro desconhecido",
         latencyMs,
         timestamp: new Date().toISOString()
       },

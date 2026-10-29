@@ -1,24 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchPlayers } from "@/lib/game";
+import { searchPlayers } from "@/lib/players.service";
+import { enforceRateLimit } from "@/lib/rateLimit.service";
+import { SearchQuerySchema } from "@/lib/schemas";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q") || "";
-  const mode = searchParams.get("mode") || "big-five";
+  const rateLimitRes = enforceRateLimit(req, "search");
+  if (rateLimitRes) return rateLimitRes;
 
-  if (q.length < 2) {
+  const { searchParams } = new URL(req.url);
+  const rawQuery = searchParams.get("q") ?? "";
+  const rawMode = searchParams.get("mode") ?? "big-five";
+
+  if (rawQuery.trim().length < 2) {
     return NextResponse.json({ results: [] });
   }
 
+  const parsed = SearchQuerySchema.safeParse({ q: rawQuery, mode: rawMode });
+  if (!parsed.success) {
+    return NextResponse.json({ results: [] }, { status: 400 });
+  }
+
   try {
-    const results = await searchPlayers(q, 8, mode);
+    const results = await searchPlayers(parsed.data.q, 8, parsed.data.mode);
     return NextResponse.json({ results });
   } catch (err: unknown) {
-    console.error("Falha ao buscar jogadores no Supabase:", err);
+    console.error("Failed to search players:", err);
     return NextResponse.json(
       {
         error: "Banco de dados indisponível",
-        message: err instanceof Error ? err.message : "Erro desconhecido",
         redirect: "/offline"
       },
       { status: 503 }

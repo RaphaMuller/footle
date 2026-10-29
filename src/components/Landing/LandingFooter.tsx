@@ -99,7 +99,7 @@ export function LandingFooter() {
               <a
                 href="https://github.com/RaphaMuller/footle"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 hover:text-stadium-ink transition-colors"
               >
                 <span>GitHub oficial</span>
@@ -110,7 +110,7 @@ export function LandingFooter() {
               <a
                 href="https://github.com/RaphaMuller/footle/issues"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 hover:text-stadium-ink transition-colors"
               >
                 <span>Sugerir / Reportar</span>
@@ -121,7 +121,7 @@ export function LandingFooter() {
               <a
                 href="https://github.com/RaphaMuller"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 hover:text-stadium-ink transition-colors"
               >
                 <span>@RaphaMuller</span>
